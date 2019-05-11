@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <title>title</title>
+  <link rel="stylesheet" href="./common/css/icon-weigoyi.css">
+  <link rel="stylesheet" href="./common/css/api.css">
+  <link rel="stylesheet" href="./common/css/orderList.css">
+  <style>
+    body {
+      background: #f8f8f8;
+      font-size: 13px;
+    }
+
+    .myordertitle:after {
+      content: " ";
+      display: inline-block;
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg);
+      height: 6px;
+      width: 6px;
+      border-width: 2px 2px 0 0;
+      border-color: #c8c8cd;
+      border-style: solid;
+      position: relative;
+      top: -2px;
+      top: -1px;
+      margin-left: .6em;
+    }
+
+    .weui-panel_access {
+      position: relative;
+    }
+
+    .activebg {
+      width: 70px;
+      height: 70px;
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      z-index: 999;
+    }
+
+    /*创业礼包样式*/
+    .groupbuy {
+      border: 1px solid #ff5543;
+      color: #ff5543;
+      border-radius: 4px;
+      padding: 1px;
+      margin-left: 3%;
+      font-size: 12px;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    /*没有数据样式*/
+    #noRec {
+      width: 100%
+    }
+
+    #noRec {
+      padding: 80px 0
+    }
+
+    #noRec .square {
+      width: 180px;
+      height: 130px;
+      margin: 0 auto
+    }
+
+    #noRec .ic_text {
+      height: 24px;
+      line-height: 38px;
+      text-align: center;
+      color: #999;
+      font-size: 15px
+    }
+
+
+
+    #mask {
+      display: none;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, .5);
+      z-index: 999;
+    }
+
+    #mask-content {
+      box-sizing: border-box;
+      width: 100%;
+      background: #fff;
+      z-index: 1000;
+      position: fixed;
+      bottom: 0px;
+      -webkit-animation-name: move;
+      -webkit-animation-duration: .5s;
+      -webkit-animation-timing-function: 0;
+      -webkit-animation-fill-mode: forwards;
+    }
+
+    @-webkit-keyframes move {
+      0% {
+        bottom: -100px;
+      }
+
+      100% {
+        bottom: 0px;
+      }
+    }
+
+    .order_btn {
+      display: block;
+      width: 100%;
+      margin: 0 auto;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      height: 50px;
+      line-height: 50px;
+      overflow: hidden;
+      background-color: #04be02;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="orderlist"></div>
+</body>
+<script src="./common/js/api.js"></script>
+<script src="./common/js/common.js"></script>
+<script src="./common/js/config.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript">
+  var pageindex = 1;
+  var pagesize = 8;
+  var stopload = false;
+  var yshopid = ''
+  if (openapp) {
+    window.apiready = function () {
+      isready()
+    }
+  } else {
+    window.onload = function () {
+      isready()
+    }
+  }
+  var isready = function () {
+    if (checkLoginStatus()) {
+      if (pageParam('biaoji') == 'shouhou') {
+        yshopid = getname('SessionShopID')
+      } else {
+        yshopid = ''
+      }
+      BindData(pageindex);
+    }
+    if (window.api) {
+      //下拉刷新
+      api.setCustomRefreshHeaderInfo({
+        bgColor: '#fff',
+        images: [
+          'widget://image/suaxin1.png',
+          'widget://image/suaxin2.png',
+          'widget://image/suaxin3.png',
+          'widget://image/suaxin4.png',
+          'widget://image/suaxin5.png',
+          'widget://image/suaxin6.png',
+          'widget://image/suaxin7.png'
+        ],
+        tips: {
+          pull: '下拉刷新',
+          threshold: '松开立即刷新',
+          load: '正在刷新'
+        }
+      }, function () {
+        setTimeout(function () {
+          stopload = false;
+          pageindex = 1;
+          BindData(pageindex);
+        }, 1000)
+      });
+      api.addEventListener({
+        name: 'scrolltobottom'
+      }, function (ret, err) {
+        if (!stopload) {
+          pageindex = pageindex + 1;
+          BindData(pageindex);
+        }
+      });
+    }
+  };
+
+  function BindData(page) {
+    https({
+      url: siteUrl + 'Main/Member/GerRefuncOrderList?devicetype=7',
+      method: 'get',
+      data: {
+        currpage: page,
+        pagesize: pagesize,
+        uid: getname(),
+        yshopid: yshopid
+      },
+      headers: 1,
+      successBack: function (ret, err) {
+        if (ret) {
+          if (ret.success) {
+            var shtml = "";
+            if (ret.status == 1 && ret.Data != null && ret.Data.length != 0) {
+              var data = ret.Data;
+              if (page == 1) {
+                $api.html($api.byId('orderlist'), '');
+              }
+              data.forEach(function (item, i) {
+                var procount = 0;
+                var ordersta = ""; //订单状态
+                var isgb = false; //是否拼团
+                switch (item.status) {
+                  case 1:
+                    ordersta = "待处理";
+                    break;
+                  case 2:
+                    ordersta = "未通过";
+                    break;
+                  case 3:
+                    ordersta = "已通过"
+                    break;
+                  case 5:
+                    ordersta = "处理中"
+                    break;
+                  default:
+                    ordersta = "--";
+                    break;
+                }
+                shtml += '<div class="weui-panel weui-panel_access">';
+                shtml += '<div class="weui-panel__hd"  onclick="openShop(\'' + item.comid +
+                  '\')"><i class="icon-xiaodian" style="padding-right:5px;color: #333;"></i><span style="font-weight: bold;color:#333;" class="myordertitle">' +
+                  item.shopname + '</span><span class="ord-status-txt-ts fr">' + ordersta + '</span></div>';
+                shtml += '<div class="weui-media-box__bd  pd-10"  onclick="OpenOrderDetail(\'' + item
+                  .orderid +
+                  '\',' + isgb + ')">';
+                shtml += '    <div class="weui-media-box_appmsg ord-pro-list">';
+                shtml += '        <div class="weui-media-box__hd">';
+                shtml += '            <a href="javascript:void(0)"><img class="weui-media-box__thumb" src="' +
+                  item.pic + '" alt=""></a>';
+                shtml += '        </div>';
+                shtml += '        <div class="weui-media-box__bd">';
+                shtml +=
+                  '            <h1 class="weui-media-box__desc"><a href="javascript:void(0)" class="ord-pro-link">' +
+                  item.name + '</a></h1>';
+                if (item.skutext) {
+                  shtml += '            <p class="weui-media-box__desc">规格：<span>' + item.skutext +
+                    '</span></p>';
+                }
+                shtml += '            <div class="clear mg-t-10">';
+                shtml += '                <div class="wy-pro-pri fl">¥<em class="num font-15">' + parseFloat(
+                  item
+                  .price).toFixed(2) + '</em></div>';
+                shtml +=
+                  '                <div class="pro-amount fr"><span class="font-13">数量×<em class="name">' +
+                  item.count + '</em></span>';
+                shtml += '            </div>';
+                shtml += '            </div>';
+
+                shtml += '        </div>';
+                shtml += '    </div>';
+                //  shtml += '<div class="ord-statistics">';
+                //  shtml += '  <span>共<em class="num">'+item.count+'</em>件商品</span>';
+                //
+                //  shtml += '  <span class="wy-pro-pri">总金额：¥<em class="num font-15">'+parseFloat(item.total).toFixed(2)+'</em></span>';
+                //  shtml += '</div>';
+                //  shtml += '<div class="weui-panel__ft">';
+                //  shtml += '  <div class="weui-cell weui-cell_access weui-cell_link oder-opt-btnbox">';
+                //  shtml += '</div>';
+                shtml += '</div>';
+                shtml += '</div>';
+              });
+              $api.append($api.byId('orderlist'), shtml);
+            } else {
+              stopload = true;
+              if (page == 1) {
+                var shtml = '';
+                shtml += '<div class="noRec" id="noRec">';
+                shtml += '<div class="square">';
+                shtml += '<img src="../../image/nodata.png" alt="" width="100%">';
+                shtml += '</div>';
+                shtml += '<div class="ic_text">抱歉，目前没有显示记录~</div>';
+                shtml += '</div>';
+                $api.html($api.byId('orderlist'), shtml);
+              }
+            }
+          } else {
+            promptMsg(ret.err)
+          }
+        } else {
+          alert(JSON.stringify(err));
+        }
+        if(window.api) api.refreshHeaderLoadDone()
+
+      }
+    });
+
+  }
+
+  function OpenOrderDetail(orderid, isgb) {
+    if (!isgb) {
+      openWin({
+        name: 'orderdetail',
+        url: './orderdetail.html',
+        pageParam: {
+          orderid: orderid,
+          title: '订单详情'
+        }
+      }, 1);
+    } else {
+      openWin({
+        name: 'groupbuyorderdetail',
+        url: './orderdetail.html',
+        pageParam: {
+          orderid: orderid,
+          title: '订单详情'
+        }
+      }, 1);
+    }
+  }
+
+  function openShop(shopid) {
+    return
+    api.openWin({
+      name: 'companyshop',
+      url: '../company/companyshop.html',
+      pageParam: {
+        companyid: shopid
+      },
+      bgColor: "#fff"
+    });
+  }
+</script>
+
+</html>

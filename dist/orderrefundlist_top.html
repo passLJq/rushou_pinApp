@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" href="./common/css/api.css">
+      <style>
+          body{
+            background-color: #fcfcfc;
+          }
+      </style>
+  </head>
+  <body>
+    <div id="head"></div>
+  </body>
+  <script src="./common/js/api.js"></script>
+  <script src="./common/js/common.js"></script>
+  <script src="./common/js/config.js"></script>
+  <script type="text/javascript">
+        var statustop=$api.getStorage('statustop');
+      apiready = function(){
+            headTitle($api.byId('head'),'退换/售后');
+            InitTop();
+            InitGroup()
+      };
+
+        function InitTop(){
+              var width = api.frameWidth/5;
+              var navigationBar = api.require('navigationBar');
+              navigationBar.open({
+                  y: 46+Number(statustop),
+                  w: api.frameWidth,
+                  h: 48,
+                  itemSize: {
+                      w: api.frameWidth/2
+                  },
+                  selectedLine : {
+                    color : '#FE334B', // 字符串；下划线的颜色
+                      width :2, // 数字；下划线的宽
+                       marginLR: 8
+                    },
+                  selectedIndex: api.pageParam.selectindex,
+                  items: [{
+                      title: '退款订单',
+                      bg: '#fff',
+                      color: '#2C5B33',
+                      colorSelected: '#2C5B33',
+                      bgSelected: '#fff',
+                        bgSelected :  'widget://image/under_line.png'
+                  }, {
+                      title: '换货订单',
+                      bg: '#fff',
+                      color: '#2C5B33',
+                      colorSelected: '#2C5B33',
+                      bgSelected: '#fff',
+                        bgSelected :  'widget://image/under_line.png'
+                  }],
+                  font: {
+                       size:14,
+                       sizeSelected:14,
+                       color: '#333',
+                       colorSelected: '#ff0000'
+                  },
+                  fixedOn: api.frameName,
+                  showScrollIndicator:false,
+                  id: 'ordertop'
+              }, function(ret, err) {
+
+                if(ret.eventType == 'click'){
+                  api.setFrameGroupIndex({
+                     name: 'orderrefundlists',
+                     index: ret.index
+                   });
+                }
+
+              });
+           };
+
+
+
+
+
+
+          function InitGroup(){
+            api.openFrameGroup({
+              name: 'orderrefundlists',
+              rect: {
+                marginLeft:0,    //相对父window左外边距的距离
+                marginTop:94+Number(statustop),    //相对父window上外边距的距离
+                marginBottom:0,    //相对父window下外边距的距离
+                marginRight:0    //相对父window右外边距的距离
+              },
+              index : api.pageParam.selectindex,
+              frames: [{
+                  name: 'allorder',
+                  url: 'shouhou.html',
+                  bgColor: '#fff',
+                  pageParam :{biaoji:api.pageParam.biaoji,type:1}
+              }, {
+                  name: 'paymentorder',
+                  url: 'shouhou.html',
+                  bgColor: '#fff',
+                  pageParam :{biaoji:api.pageParam.biaoji,type:2}
+              }]
+            }, function(ret, err) {
+                var index = ret.index;
+                var navigationBar = api.require('navigationBar');
+                // navigationBar.setSelected({
+                //     id: 'ordertop',
+                //     index: index,
+                //     selected: true
+                // });
+                navigationBar.config({
+                  key: 'selectedIndex',
+                  value:index
+                }, function(ret, err) {
+                  if (ret) {
+
+                  } else {
+                      alert(JSON.stringify(err));
+                  }
+              });
+            });
+          }
+
+          function headTitle(el,title, isShare, shareCallBack){
+  var statustop=$api.getStorage('statustop');
+var hee=45+Number(statustop)+'px'
+  var shtml=''
+  var newWidth = window.innerWidth - 140
+  if(isShare) {
+    if(shareCallBack) {
+      shtml += '<div class="ym_head" style="padding-top:'+statustop+'px'+';height:'+hee+'px'+';-moz-box-shadow:0px 0px 14px #f5f4f4; -webkit-box-shadow:0px 0px 14px #f5f4f4; box-shadow:0px 0px 14px #f5f4f4; border: 0;"><div class="ym_head_back" onclick="backUrl()"><img src="'+api.wgtRootDir+'/img/icon-back.png" style="vertical-align: top;"></div><div class="ym_head_title"><p style="width:'+newWidth+'px;margin: 0 auto;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">'+title+'</p></div><div class="yu_head_share" onclick="'+shareCallBack+'()"><img src="'+api.wgtRootDir+'/image/share_black.png" style="vertical-align: top;"></div></div>';
+    }else {
+      shtml += '<div class="ym_head" style="padding-top:'+statustop+'px'+';height:'+hee+'px'+';-moz-box-shadow:0px 0px 14px #f5f4f4; -webkit-box-shadow:0px 0px 14px #f5f4f4; box-shadow:0px 0px 14px #f5f4f4; border: 0;"><div class="ym_head_back" onclick="backUrl()"><img src="'+api.wgtRootDir+'/img/icon-back.png" style="vertical-align: top;"></div><div class="ym_head_title"><p style="width:'+newWidth+'px;margin: 0 auto;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">'+title+'</p></div><div class="yu_head_share"><img src="'+api.wgtRootDir+'/image/share_black.png" style="vertical-align: top;"></div></div>';
+    }
+  }else {
+    shtml += '<div class="ym_head" style="padding-top:'+statustop+'px'+';height:'+hee+'px'+';-moz-box-shadow:0px 0px 14px #f5f4f4; -webkit-box-shadow:0px 0px 14px #f5f4f4; box-shadow:0px 0px 14px #f5f4f4; border: 0;"><div class="ym_head_back" onclick="backUrl()"><img src="'+api.wgtRootDir+'/img/icon-back.png" style="vertical-align: top;"></div><div class="ym_head_title"><p style="width:'+newWidth+'px;margin: 0 auto;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">'+title+'</p></div></div>';
+  }
+  $api.html(el,shtml);
+}
+  </script>
+  </html>

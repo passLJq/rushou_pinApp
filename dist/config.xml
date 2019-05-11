@@ -1,0 +1,61 @@
+<widget id="A6008947267837"  version="0.1.0">
+  <name>入手拼</name>
+    <description>
+
+    </description>
+    <content src="index.html" />
+
+    <access origin="*"/>
+      <feature name="aliPayPlus">
+          <param name="urlScheme" value="AliPayPlusA6059546622301" />
+      </feature>
+
+      <feature name="wx">
+        <param name="urlScheme" value="wxfd30f311de4ac23a"/>
+        <param name="apiKey" value="wxfd30f311de4ac23a"/>
+      </feature>
+
+      <feature name="tencentPush">
+        <param name="ios_accessId" value="2200294046" />
+        <param name="ios_accessKey" value="I9Z97LZ3GX9S" />
+      </feature>
+
+      <preference name="pageBounce" value="false"/>
+
+    	<preference name="hScrollBarEnabled" value="true"/>
+
+    	<preference name="vScrollBarEnabled" value="true"/>
+
+    	<preference name="autoLaunch" value="true"/>
+
+    	<preference name="fullScreen" value="false"/>
+
+    	<preference name="autoUpdate" value="true" />
+
+    	<preference name="smartUpdate" value="true" />
+
+     <preference name="debug" value="false"/>
+
+    <preference name="statusBarAppearance" value="true" />
+
+    	<permission name="readPhoneState" />
+
+      <preference name="customRefreshHeader" value="UIPullRefreshMotive"/>
+
+    	<permission name="camera" />
+
+    	<permission name="record" />
+
+    	<permission name="location" />
+
+    	<permission name="fileSystem" />
+
+    	<permission name="internet" />
+
+    	<permission name="bootCompleted" />
+
+    	<permission name="hardware" />
+
+      <preference name="urlScheme" value="rushou" />
+
+</widget>

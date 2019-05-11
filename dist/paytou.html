@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="./common/css/api.css"/>
+      <style>
+
+        *{padding:0;margin:0;}
+          /*#aui-header,.aui-bar,.aui-bar-nav {
+          background-image:url(../image/bg.png);background-repeat:no-repeat;background-size:100%;
+
+          }
+          .aui-pull-left{width:100%;height:100%;}
+          .aui-pull-left:after {
+                position: fixed;
+                left: 25px;
+                top: 28px;
+                display: block;
+                height: 10px;
+                width: 10px;
+                content: '';
+                border-left: 2px solid #fff;
+                border-bottom: 2px solid #fff;
+                -webkit-transform: rotate(45deg);
+                z-index: 100000;
+            }*/
+            #header {
+                text-align: center;
+            }
+            #header {
+                text-align: center;
+                background-color: #fff;
+                color: #000;
+                width: 100%;
+                height: 45px;
+                position: relative;
+                border-bottom: 1px solid #ccc;
+            }
+            .btn_box {
+                width: 52px;
+                height: 45px;
+                position: relative;
+                z-index:9999
+            }
+
+            .pull-left {
+                float: left;
+            }
+                  .pull-right {
+                      float: right;
+                  }
+            .btn_box img {
+              width: 20px;
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              -webkit-transform: translate(-50%,-50%);
+              transform: translate(-50%,-50%);
+          }
+          #header span {
+              color: #000;
+              font-size:18px;
+              line-height:45px;
+          }
+          /*分享图片样式*/
+          .fenxiang{ padding: 13px 20px 0 10px; background-color: #FFFFFF; overflow: hidden; width: 25px; }
+          .fenxiang>img{ width: 20px; height: 20px; }
+          #kong{
+            width:52px;
+            height:45px;
+            float:right;
+          }
+          .statop{width: 100%;}
+      .statopshow{background-color: #fff}
+      .hide{display: none;}
+      </style>
+  </head>
+  <body>
+    <div id="header">
+        <div class="btn_box pull-left" tapmode="tap-active" onclick="gosback()">
+            <img src="./img/icon-back.png" alt="">
+        </div>
+        <span id="title">支付</span>
+        <div class="btn_box pull-right hide" id="share" onclick="share()">
+          <img src="./image/share_white.png" alt=""  id="share_img">
+        </div>
+        <div id="kong"></div>
+    </div>
+  </body>
+  <script type="text/javascript" src="./common/js/api.js"></script>
+  <script type="text/javascript" src="./common/js/config.js"></script>
+  <script type="text/javascript" src="./common/js/SHA1.js"></script>
+  <script type="text/javascript" src="./common/js/common.js"></script>
+  <script type="text/javascript">
+      apiready = function(){
+          console.log($api.jsonToStr(api.pageParam.data))
+          $api.html($api.byId('title'),api.pageParam.titles)
+      };
+      function gosback(index){
+        //index是外链支付成功的回调
+        if(api.pageParam.data.name=='tixian'){
+          api.closeWin({
+            name:'tixian'
+          });
+          return
+        }
+        if(index==1){
+          //有ogid用于推送
+          if(api.pageParam.data.ogid && api.pageParam.data.ogid.length > 0) {
+            ShoppingSuccess(api.pageParam.data.paycode,"buynow",'./groups_success.html', api.pageParam.data.orderids, api.pageParam.data.ogid, "isgroupswechatpay");
+            setTimeout(function(){
+            api.closeWin();            
+          },1000)
+          }else {
+            ShoppingSuccess(api.pageParam.data.paycode,"buynow",'./success.html', api.pageParam.data.orderids);
+            setTimeout(function(){
+            api.closeWin();            
+          },1000)
+          }
+          return
+        }
+        comfirmDialogBox('确认要离开收银台？',function(){
+            https({
+              url:siteUrl +'Main/Member/CheckOrderStatus?devicetype=7',
+              data:{
+                uid:api.getPrefs({sync: true,key: 'SessionUserID'}),
+                orderid:api.pageParam.data.orderids
+              },
+              headers:1,
+              successBack:function(ret){
+                if(ret.success&&ret.status==1){
+                  //支付成功
+                  if(ret.Data>=20){
+                    //有ogid用于推送
+                    if(api.pageParam.data.ogid && api.pageParam.data.ogid.length > 0) {
+                      ShoppingSuccess(api.pageParam.data.paycode,"buynow",'./groups_success.html', api.pageParam.data.orderids, api.pageParam.data.ogid, "isgroupswechatpay");
+                    }else {
+                      ShoppingSuccess(api.pageParam.data.paycode,"buynow",'./success.html', api.pageParam.data.orderids);
+                    }
+                    setTimeout(function(){
+                      api.closeWin();            
+                    },1000)
+                  }else{
+                    pushMsg("订单号: ["+ api.pageParam.data.orderids +"] 订单提交成功,等待付款", api.pageParam.data.orderids)
+                    //支付失败
+                    api.alert({
+                        title: '支付结果',
+                        msg:'支付取消,请在订单中继续付款',
+                        buttons: ['确定']
+                    });
+                    setTimeout(function(){
+                      ReturnToIndex(4)
+                    },1000)
+                  }
+                }else{
+                  promptMsg(ret.err)
+                }
+              }
+            })
+        })
+      }
+  </script>
+  </html>

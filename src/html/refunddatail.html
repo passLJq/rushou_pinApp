@@ -1,0 +1,356 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <title>个人中心</title>
+  <link rel="stylesheet" type="text/css" href="./common/css/api.css" />
+  <link rel="stylesheet" type="text/css" href="./common/css/style.css" />
+  <link rel="stylesheet" type="text/css" href="./common/css/orderList.css" />
+  <link rel="stylesheet" type="text/css" href="./common/css/icon-weigoyi.css" />
+  <style>
+    .user_data {
+      border-bottom: 1px solid #ddd;
+      line-height: 50px;
+    }
+
+    .user_data img {
+      width: 50px;
+      height: 50px;
+      padding-left: 100px;
+      margin: 5px 0;
+    }
+
+    label {
+      position: absolute;
+      line-height: 54px;
+      left: 10px;
+      font-size: 16px;
+    }
+
+    em {
+      margin-right: 3px
+    }
+
+    input {
+      border: 0;
+      color: #878787;
+      padding-left: 100px;
+      width: 100%;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      height: 54px;
+      font-family: "微软雅黑";
+      outline: none;
+    }
+
+    .text {
+      padding-top: 3px;
+      border: 0;
+      color: #878787;
+      padding-left: 102px;
+      width: 100%;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      height: 54px;
+      font-family: "微软雅黑";
+      outline: none;
+    }
+
+    .check-radio {
+      display: inline-block;
+      position: relative;
+      left: 100px;
+    }
+
+    .check-radio p {
+      padding-left: 25px;
+      line-height: 55px;
+    }
+
+    .check-radio span {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      border: 3px #d2d2d2 solid;
+      position: absolute;
+      top: 18px;
+      left: 0;
+      border-radius: 250px;
+    }
+
+    .u_foot {
+      text-align: center;
+      margin-top: 30px
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 6px 12px;
+      margin-bottom: 0;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.42857143;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      -ms-touch-action: manipulation;
+      touch-action: manipulation;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      background-image: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: #fff;
+      background-color: #5bc0de;
+      border-color: #46b8da;
+      width: 30%
+    }
+
+    select {
+      border: 0;
+      color: #878787;
+      margin-left: 100px;
+      width: 70%;
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      height: 54px;
+      font-family: "微软雅黑";
+      outline: none;
+      background-color: #efefef;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -o-appearance: none;
+    }
+
+    .none {
+      display: none;
+    }
+
+    .font1 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #878787;
+      padding-left: 100px;
+      width: 65%;
+      height: 54px;
+    }
+    #header {
+      background-color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="head"></div>
+  <div class="user_info">
+    <ul>
+      <li class="user_data" id="server">
+        <label for="">申请服务</label>
+        <input type="text" placeholder="请输入您的昵称">
+      </li>
+      <li class="user_data" id="shopname">
+        <label for="">退款商品</label>
+        <input type="text" placeholder="请输入您的昵称">
+      </li>
+      <li class="user_data" id="buycount">
+        <label for="">退款数量</label>
+        <input type="number" placeholder="请输入您的电话号码">
+      </li>
+      <li class="user_data" id="price">
+        <label for="">退款金额</label>
+        <input type="text" placeholder="请填写您的微信账号">
+      </li>
+      <li class="user_data" id="bind">
+        <label for="">退款方式</label>
+        <select class="" name="" id="select" disabled onchange="btnChange(this[selectedIndex].value)">
+          <option value="选择">请选择</option>
+        </select>
+      </li>
+      <li class="user_data none" id="account">
+        <label for="">退款账号</label>
+        <input type="text" placeholder="请填写您的退款账号" id="account_v">
+      </li>
+      <li class="user_data none" id="bankbranch">
+        <label for="">银行名称</label>
+        <input type="text" placeholder="请填写您银行支行地点" id="bankbranch_v">
+      </li>
+      <li class="user_data none" id="name">
+        <label for="">真实姓名</label>
+        <input type="text" placeholder="请填写您的真实姓名" id="name_v">
+      </li>
+      <li class="user_data">
+        <label for="">退款原因</label>
+        <input type="text" placeholder="请填写您的退款原因" id="description">
+      </li>
+    </ul>
+    <div class="u_foot">
+      <button class="btn" onclick="sut()">提交</button>
+    </div>
+    <script type="text/javascript" src="./common/js/api.js"></script>
+    <script type="text/javascript" src="./common/js/SHA1.js"></script>
+    <script type="text/javascript" src="./common/js/config.js"></script>
+    <script type="text/javascript" src="./common/js/common.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      if (openapp) {
+        window.apiready = function () {
+          isready()
+        }
+      } else {
+        window.onload = function () {
+          isready()
+        }
+      }
+      var isready = function () {
+        headTitle(document.getElementById('head'), '退款');
+        $api.html($api.byId('server'), '<label for="">申请服务</label><p class="text">部分退款</p>');
+        $api.html($api.byId('shopname'), "<label>退款商品</label><div class='font1'>" + pageParam('proname') + "</div>");
+        $api.html($api.byId('buycount'), '<label for="">退款数量</label><p class="text">' + pageParam('buycount') +
+          '</p>');
+        $api.html($api.byId('price'), '<label for="">退款价格</label><p class="text">' + pageParam('price') + '</p>');
+        https({
+          url: siteUrl + 'Main/Member/GetUserCashWithdrawalWay?devicetype=7',
+          method: 'get',
+          data: {
+            uid: getname(),
+            orderid: pageParam('orderid')
+          },
+          headers: 1,
+          successBack: function (ret, err) {
+            if (ret) {
+              if (ret.success) {
+                if (ret.status == 1 && ret.Data != null) {
+                  var data = ret.Data;
+                  var com = '';
+                  data.forEach(function (item, i) {
+                    com += '<option value="' + item.wayid + '">' + item.wayname + '</option>'
+                  });
+                  $api.html($api.byId('select'), com);
+                }
+              }
+            } else {
+              alert(JSON.stringify(err));
+            }
+          }
+        });
+
+      }
+
+      function btnChange(values) {
+        if (values == "130307103845224911") {
+          $api.removeCls($api.byId('account'), 'none');
+          $api.addCls($api.byId('name'), 'none');
+          $api.addCls($api.byId('bankbranch'), 'none');
+          // 支付宝
+        } else if (values == '选择' || values == '130307103845221139' || values == '130307103845224910') {
+          $api.addCls($api.byId('account'), 'none');
+          $api.addCls($api.byId('name'), 'none');
+          $api.addCls($api.byId('bankbranch'), 'none');
+          // 钱包
+        } else {
+          $api.removeCls($api.byId('account'), 'none');
+          $api.removeCls($api.byId('name'), 'none');
+          $api.removeCls($api.byId('bankbranch'), 'none');
+        }
+      }
+
+      function sut() {
+        var account = $api.val($api.byId('account_v'));
+        var bankbranch = $api.val($api.byId('bankbranch_v'));
+        var name = $api.val($api.byId('name_v'));
+        var description = $api.val($api.byId('description'));
+        var wayid = document.getElementById("select").value;
+        if (wayid == '选择') {
+          promptMsg('请选择退款方式')
+          return false;
+        } else if (wayid == '130307103845224911') {
+          // if (account == '') {
+          //   promptMsg('请输入退款账号')
+          //   return false;
+          // }
+        } else if (wayid != '选择' && wayid != '130307103845221139' && wayid != '130307103845224910') {
+          if (account == '') {
+            promptMsg('请输入退款账号')
+            return false;
+          }
+          if (bankbranch == '') {
+            promptMsg('请输入支行地点')
+            return false;
+          }
+          if (name == '') {
+            promptMsg('请输入真实名字')
+            return false;
+          }
+        } else if (description == '') {
+          promptMsg('请填写退款原因')
+          return false;
+        }
+        api.ajax({
+          url: siteUrl + 'Main/Member/RefuncOrder?devicetype=7&uid=' + getname(),
+          method: 'post',
+          data: {
+            body: {
+              uid: api.getPrefs({
+                sync: true,
+                key: 'SessionUserID'
+              }),
+              orderid: pageParam('orderid'),
+              itemid: pageParam('itemid'),
+              proid: pageParam('proid'),
+              buycount: pageParam('buycount'),
+              price: pageParam('price'),
+              description: description,
+              wayid: wayid,
+              bankbranch: bankbranch,
+              account: account,
+              name: name,
+            }
+          },
+          headers: {
+            "Authorization": api.getPrefs({
+              sync: true,
+              key: 'SessionKey'
+            }),
+            "Content-Type": 'application/json; charset=utf-8'
+          }
+        }, function (ret, err) {
+          console.log($api.jsonToStr(ret))
+          console.log($api.jsonToStr(err));
+          if (ret) {
+            if (ret.success && ret.status == 1) {
+              pushMsg("商品: [" + pageParam('orderid') + "] 申请退款提交成功", pageParam('orderid'))
+              promptMsg('提交成功');
+              api.execScript({
+                name: 'orderdetail',
+                script: 'BindData();'
+              });
+              api.sendEvent({
+                name: 'stuu'
+              });
+              var timer = setTimeout(function () {
+                api.closeWin({
+                  name: 'refunddatail'
+                });
+              }, 1000)
+            } else {
+              promptMsg(ret.err)
+            }
+          } else {
+            promptMsg(err.msg)
+          }
+        });
+      }
+    </script>
+</body>
+
+</html>

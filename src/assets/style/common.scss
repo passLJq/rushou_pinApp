@@ -1,0 +1,36 @@
+.yanbtn{
+    background:linear-gradient(270deg,rgba(254,51,75,1) 0%,rgba(255,114,130,1) 100%);
+    border-radius:35px;
+    font-size: rems(32);
+    color: #fff;
+    text-align: center;
+    padding: rems(18) 0;
+}
+/* 右箭头 */
+.newright-arrow {
+    display :inline-block;
+    position: relative;
+    width: 14px;
+    height: 18px;
+    color: #999999
+}
+
+.newright-arrow::after {
+    display: inline-block;
+    content: " ";
+    height: 9px;
+    width: 9px;
+    border-width: 1px 1px 0 0;
+    border-color: #999999;
+    border-style: solid;
+    transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+    position: absolute;
+    top: 50%;
+    right: 3px;
+    margin-top: -4px;
+}
+/* 左箭头 */
+
+.nodata{text-align: center;color: #999;font-size: rems(28);margin-top: 10%}
+.nodata img{width: 60%;margin: 0 auto;}
+.nodata p{color: #333333;font-size: rems(28);}

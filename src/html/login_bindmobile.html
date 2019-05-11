@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="./common/css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="./common/css/style.css"/>
+      <style>
+          body{
+          background-color: #fff
+          }
+          .img_kuang{
+            margin: 0 auto;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 3px solid #eee; overflow: hidden;
+          }
+          .head{padding-top: 50px}
+          p{color:#666}
+          .head_title{text-align: center; color: #333;}
+          .input-wrap{padding:10px 0;display:-webkit-box;display:-moz-box;display:-webkit-flex;display:-moz-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;border-bottom:1px solid #d4d4d4}
+          .form{margin:40px 35px 0 35px;border-radius:8px;line-height:1.875rem}
+          .input-wrap input{display:block;-webkit-box-flex:1;outline:0;height:30px;font-size: 15px;color:#333}
+          .input-wrap .input-wrap-list{-webkit-box-flex:1;-webkit-flex:1;flex:1}
+          .code-input{width:100%;border:0;outline:0;-webkit-appearance:none;background-color:transparent;font-size:inherit}
+          .code-btn{display:inline-block;vertical-align:middle;color:#F72133;border:none;background-color:transparent}
+          .button{display:block;color:#fff;font-weight: 400;margin:40px 40px 10px;text-align:center;border-radius:20px;height:40px;line-height:40px;border:1px solid #d4d4d4;background-color: rgba(219,219,219,1);}
+          .login-content{width:100%;text-align:center;margin:10px auto;font-size:0.875rem}
+          input::-ms-input-placeholder{color: #666;font-size:13px;font-family:"微软雅黑"}
+          input::-webkit-input-placeholder{color:#666;font-size:13px;font-family:"微软雅黑"}
+          #userName{color: #F72133;}
+          /*头部*/
+          .header_container{height:40px; line-height:40px; padding:0 15px; position: relative;}
+          .header_container > div{position: absolute; left: 0; top: 0; font-size: 15px; width: 100%; text-align: center; line-height: 40px;text-align: center;}
+          .header_container > div:nth-child(1) {width: 50px; text-align: left; padding-left: 15px; z-index: 9999;}
+          .header_container > div:nth-child(1) > img{width: 20px;height: 20px; vertical-align:middle; position: relative; top: -2px;}
+      </style>
+  </head>
+  <body>
+    <div id="nav_top_mask"></div>
+    <div class="header_container">
+      <div onclick="backUrl()">
+        <img src="./img/icon-back.png">
+      </div>
+      <div>绑定手机号码</div>
+    </div>
+
+    <section class="head">
+      <div class="img_kuang">
+        <img src="./img/man.jpg" width="80px" height="80px" id="headphoto">
+      </div>
+    </section>
+    <section class="head_title">
+    <p style="padding-top: 10px;">亲爱的 <span id="userName"></span></p>
+    <p>为了账户安全，请绑定一个手机号码</p>
+      </section>
+      <div class="content">
+          <div class="form">
+              <div class="input-wrap">
+                  <input type="number" placeholder="请输入手机号" class="txt" id="telphone"  oninput="if(value.length>11)value=value.slice(0,11)"/>
+              </div>
+              <div class="input-wrap">
+                <div class="input-wrap-list"><input type="number" placeholder="请输入短信验证码" class="txt code-input" id="smscode" maxlength="4"  oninput="if(value.length>4)value=value.slice(0,4)"/></div>
+                <div class="nput-wrap-list-ft" ><span class="code-btn" id="sendValidcode">获取验证码</span></div>
+              </div>
+          </div>
+          <div class="button margin-top-25" id="login" tapmode="" onclick="LoginIn()">绑&nbsp;定</div>
+      </div>
+  </body>
+  <script type="text/javascript" src="./common/js/api.js"></script>
+  <script type="text/javascript" src="./common/js/common.js"></script>
+  <script type="text/javascript" src="./common/js/config.js"></script>
+  <script type="text/javascript">
+
+      var n = 0;
+      var intervalID;
+      var timelong = 120;
+      if (openapp) {
+        window.apiready = function () {
+          isready()
+        }
+      } else {
+        window.onload = function () {
+          isready()
+        }
+      }
+      var isready = function(){
+        var statustop=$api.getStorage('statustop');
+        $api.css($api.byId("nav_top_mask"), 'height:'+(parseFloat(statustop)+10)+'px;')
+        document.getElementById("sendValidcode").addEventListener('click', GetSmsCode, false);
+        $api.attr($api.byId('headphoto'), 'src', pageParam('headphoto'));
+        $api.html($api.byId('userName'), pageParam('userName'));
+        if (window.api) {
+          api.execScript({
+            name: 'login',
+            script: 'api.hideProgress();'
+          })
+        }
+      };
+
+      function LoginIn(){
+        var telephone = $api.val($api.byId("telphone"));
+        var smscode = $api.val($api.byId("smscode"));
+        if(telephone==null||telephone==''){
+            promptMsg('请输入手机号码');
+            return;
+        }
+        if(smscode==null||smscode==''){
+            promptMsg('请输入验证码');
+            return;
+        }
+        if(!/^[1]+[3,4,5,6,7,8,9]+\d{9}$/.test(telephone)){
+            promptMsg('手机号码格式错误');
+            return;
+        }
+        if(smscode.length!=4){
+            promptMsg('验证码错误');
+            return;
+        }
+        //测试环境暂时隐藏
+        var sessionsmscode = $api.getStorage('sessionsmscode');
+        if(sessionsmscode == null){
+            promptMsg('验证码已过期');
+            return;
+        }
+        else{
+          var time = $api.strToJson(sessionsmscode).time;
+          var nowtime = new Date();
+          if((nowtime.getTime()-time)> timelong*1000 ){
+              promptMsg('验证码已过期');
+              $api.rmStorage('sessionsmscode');
+              return;
+          }
+        }
+        https({
+          url: siteUrl +'Main/Login/RegisterByWeChat?devicetype=7',
+          method: 'post',
+          data: {
+            telphone: telephone,
+            smscode : smscode,
+            smspassword : $api.strToJson(sessionsmscode).code,
+            accesstoken : pageParam('accesstoken'),
+            refreshtoken : pageParam('refreshtoken'),
+            openid : pageParam('openid'),
+            expiresin : pageParam('expiresin'),
+            devicetype: 7
+          },
+          headers: 1,
+          successBack: function(ret, err) {
+            if(ret){
+              if(ret.success){
+                  if(ret.status==1){
+                      //登录成功
+                      //设置登录状态
+                      api.setPrefs({ key:'SessionUserID',value:ret.data.userid});
+                      api.setPrefs({ key:'SessionName',value:ret.data.telphone});
+                      api.setPrefs({ key:'SessionKey',value:ret.data.sessionkey});
+                      api.setPrefs({ key:'SessionShopID',value:ret.data.fxshopid});
+                      api.setPrefs({ key:'loginStatus',value:'loginSuccess'});
+                      $api.rmStorage('sessionsmscode');
+                      //不为0表示首次注册
+                      if(ret.data.newcouponnum!=0){
+                        api.sendEvent({
+                           name: 'newuser',
+                           extra: {
+                                key1:ret.data.newcouponnum
+                            }
+                        });
+                        if(pageParam('isIndexComming')) {
+                          api.execScript({
+                              name: 'root',
+                              frameName: 'new_showcoupon',
+                              script: 'getMsg();'
+                          });
+                        }
+                      }else {
+                        if(pageParam('isIndexComming')) {
+                          api.execScript({
+                              name: 'root',
+                              frameName: 'new_showcoupon',
+                              script: 'clos();'
+                          });
+                        }
+
+                      }
+                      //推送开始
+                      var push = api.require('push');
+                      push.bind({
+                          userName: 'pushname',
+                          userId: ret.data.userid
+                      }, function(ret, err){
+                      });
+                      //跳转视图
+                      api.closeWin({
+                          name: 'login'
+                      });
+                      api.closeWin();
+                      //api.sendEvent广播登录成功事件
+                      api.sendEvent({
+                         name: 'loginSuccess'
+                      });
+                      api.execScript({
+                        name: 'root',
+                        frameName:'mycenter_body',
+                        script: 'BindData()'
+                      });
+                      if(ret.data.fxshopid!=null&&ret.data.fxshopid!=""){
+                        api.sendEvent({
+                           name: 'hasshopid'
+                        });
+                      }
+                    }
+                  else{
+                    promptMsg(ret.err);
+                  }
+              }
+              else{
+                  promptMsg(ret.err);
+              }
+            }
+            else{
+              promptMsg(err.msg);
+            }
+        }
+      });
+
+
+      }
+      function GetSmsCode(){
+          var telephone = $api.val($api.byId('telphone'));
+          if(telephone==null||telephone==''){
+              promptMsg('请输入手机号码');
+              return;
+          }
+          if(!/^[1]+[3,4,5,6,7,8,9]+\d{9}$/.test(telephone)){
+              promptMsg('手机号码格式错误');
+              return;
+          }
+          document.getElementById("sendValidcode").removeEventListener('click', GetSmsCode, false);
+          api.ajax({
+            url: siteUrl +'Main/Login/SendSMSCode',
+            method: 'get',
+            dataType:'json',
+            data: {
+              values: {
+                telphone: telephone
+              }
+            }
+          }, function(ret, err) {
+            if(ret){
+              if(ret.success){
+                if(ret.status==1&&ret.Data!=null&&ret.Data!=""){
+                  //发送成功
+                  promptMsg("发送成功");
+                  var datetime = new Date();
+                  var json = {
+                    code:ret.Data,
+                    time:datetime.getTime()
+                  };
+                  var smscodejson = $api.jsonToStr(json);
+                  $api.setStorage('sessionsmscode',smscodejson);
+                  intervalID = window.setInterval("setEnable()", 1000);
+                } else {
+                  promptMsg(ret.err);
+                  document.getElementById("sendValidcode").addEventListener('click', GetSmsCode, false);
+                }
+              } else {
+                promptMsg(ret.err);
+                document.getElementById("sendValidcode").addEventListener('click', GetSmsCode, false);
+              }
+            }
+            else{
+              promptMsg(err.msg);
+              document.getElementById("sendValidcode").addEventListener('click', GetSmsCode, false);
+            }
+          });
+      }
+      function setEnable() {
+          n++;
+          if (n >= 0 && n <= timelong) {
+              document.getElementById("sendValidcode").innerText = (timelong - n) + "S后重新获取";
+              document.getElementById("sendValidcode").removeEventListener('click', GetSmsCode, false);
+              document.getElementById("sendValidcode").style.color = "#DBDBDB"
+              document.getElementById("login").style.backgroundColor = "#FF4A00"
+          } else {
+              document.getElementById("sendValidcode").innerText = "获取验证码";
+              document.getElementById("sendValidcode").addEventListener('click', GetSmsCode, false);
+              document.getElementById("sendValidcode").style.color = "#F72133"
+              $api.rmStorage('sessionsmscode');
+              window.clearInterval(intervalID);
+              n=0;
+          }
+      }
+  </script>
+  </html>

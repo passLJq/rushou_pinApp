@@ -1,0 +1,762 @@
+<!--版权所有：Copyright © 深圳凡派 2013,深圳市凡派网络科技有限公司 -->
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <title></title>
+  <script src='./common/js/api.js'></script>
+  <script src='./common/js/config.js'></script>
+  <script src='./common/js/common.js'></script>
+  <style>
+    *{
+         padding: 0;
+         margin:  0;
+       }
+       #wrap {
+    height: 100%;
+        }
+       body{
+            font-family: Helvetica,STHeiti STXihei,Microsoft JhengHei,Microsoft YaHei,Arial;
+            margin: 0;
+            background-color: #fff;
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 auto;
+            font-size: 14px;
+            height: 100%;
+            background-color: #efefef;
+            position: fixed;
+             width: 100%;
+         }
+        .flex-vertical {
+            -webkit-box-orient: vertical;
+            -webkit-flex-flow: column;
+            flex-flow: column;
+        }
+        .flex-wrap {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+        }
+       header{ background-color: #f2f2f2; }
+        header ul li { height: 50px; line-height: 50px; text-align: center; display: none; color: #323237; position: relative;font-size: 18px;  }
+        header ul li.active{ display: block; }
+        #footer{  background-color: #fff;z-index: 999999;}
+        #footer ul li{  padding-top: 35px; padding-bottom: 4px; background: url() no-repeat center 7px; background-size: auto 30px; text-align: center; }
+        #footer ul li.active{ color: #e69888; }
+        #footer ul li:nth-child(1){ background-image: url(./image/index/tz.png);background-size:25px 25px;background-position: 50% 16%}
+        #footer ul li:nth-child(2){ background-image: url(./image/index/fx1.png); background-size:25px 25px;background-position: 50% 16%}
+        #footer ul li:nth-child(3){ background-image: url(./image/index/noa1.png);background-size:25px 25px;background-position: 50% 16%;}
+        #footer ul li:nth-child(4){ background-image: url(./image/index/noa4.png); background-size:25px 25px; position:relative;background-position: 50% 36%}
+        #footer ul li:nth-child(5){ background-image: url(./image/index/p5.png);background-size:25px 25px; background-position: 50% 36%}
+        #footer ul li:nth-child(1).active{ background-image: url(./image/index/tzs.png);background-size:25px 25px; background-position: 50% 16%}
+        #footer ul li:nth-child(2).active{ background-image: url(./image/index/fx4.png);background-size:25px 25px; background-position: 50% 16%}
+        #footer ul li:nth-child(3).active{ background-image: url(./image/index/ca1.png); background-size:25px 25px;background-position: 50% 16%}
+        #footer ul li:nth-child(4).active{ background-image: url(./image/index/ca4.png); background-size:25px 25px;background-position: 50% 36%}
+        #footer ul li:nth-child(5).active{ background-image: url(./image/index/ap5.png);background-size:25px 25px;background-position: 50% 36% }
+        .index_btn_3 #cart_count{
+          position: absolute;
+          top: 6px;
+          left: 57%;
+          z-index: 9999;
+          /* display: inline-block; */
+          padding: .10em .3em;
+          min-width: 8px;
+          border-radius: 18px;
+          border: 1px solid #ff5543;
+          background-color: red;
+          color: #fff;
+          font-weight: 400;
+          text-align: center;
+          font-size: 12px;
+          font-style: normal;
+          vertical-align: middle;
+          width: auto;
+          height: auto;
+          line-height: 12px;
+          display: none;
+          }
+        .hide{display: none}
+.andie{
+  transition: transform 0.5s;
+}
+.andie:active{
+      transform:scale(0.45);
+      -ms-transform:rotate(0.45); 	/* IE 9 */
+      -moz-transform:rotate(0.45); 	/* Firefox */
+      -webkit-transform:rotate(0.45); /* Safari 和 Chrome */
+      -o-transform:rotate(0.45); 	/* Opera */
+  }
+  .flex-con{
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1
+  }
+  li{
+    list-style-type:none;
+  }
+  .imgdiaoxiao{
+    width: 60%;
+    margin:  0 auto;
+    margin-top:20%
+  }
+     </style>
+</head>
+
+<body>
+  <div id="wrap" class="flex-wrap flex-vertical">
+    <div id="main" class="flex-con" style="text-align:center">
+      <div id="diaoxian" onclick="indexfromgroud()" class="hide">
+        <img src="./image/diaoxian.png" alt="" class="imgdiaoxiao">
+        <p>出错了,点击重试</p>
+      </div>
+    </div>
+    <div id="footer" class="border-t">
+      <ul class="flex-wrap">
+        <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con active index_btn_0 andie">首页</li>
+        <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con index_btn_1 andie" id="classify">发现</li>
+        <!-- <li tapmode="hover" onclick="yshoprandomSwitchBtn( this ,true);" class="flex-con index_btn_2 andie" id="groupbuy">团长</li> -->
+        <li tapmode="hover" onclick="randomSwitchBtn(this);" class="flex-con index_btn_2 andie" id="groupbuy">团长</li>
+        <!-- <li tapmode="hover" onclick="randomSwitchBtn( this ,true);" class="flex-con index_btn_3 andie" >购物车<b><em id="cart_count"></em></b></li> -->
+        <li tapmode="hover" onclick="randomSwitchBtn( this );" class="flex-con index_btn_4 andie">我的</li>
+      </ul>
+    </div>
+  </div>
+</body>
+
+</html>
+<script type="text/javascript">
+  var statustop
+  var selecttag = null
+  var rootCheack = false // 执行maintop的rootcheack函数 首次不加载，防止报错
+  var classdata //打开首页头部分类缓存
+
+  apiready = function () {
+    $api.fixTabBar($api.byId('footer'))
+    api.setPrefs({
+      key: "safeAreaBottom",
+      value: api.safeArea.bottom
+    });
+    api.setStatusBarStyle({
+      style: 'dark',
+    });
+    api.setFullScreen({
+      fullScreen: false
+    });
+    //沉浸示
+    var safeArea = api.safeArea;
+    var statusBarAppearance = api.statusBarAppearance;
+    if (statusBarAppearance) {
+      statustop = safeArea.top
+      $api.setStorage('statustop', statustop);
+      api.setPrefs({
+        key: 'statustop',
+        value: statustop
+      });
+    } else {
+      statustop = 0
+      $api.setStorage('statustop', statustop);
+      api.setPrefs({
+        key: 'statustop',
+        value: statustop
+      });
+    }
+    var nows = new Date()
+    //打开首页头部分类缓存
+    classdata = api.readFile({
+      sync: true,
+      path: "fs://classid.json"
+    });
+    //首页开机广告
+    // if(nows.getDate()!=getname('oneopen')){
+    //   api.openWin({
+    //     name: 'openapp_one',
+    //     url: './openapp_one.html',  
+    //     slidBackEnabled:false,   
+    //     bgColor:'#fff'
+    //   })
+    // }else{
+    indexfromgroud()
+    // }
+
+    ListeningEvent()
+
+    api.addEventListener({ //监听退出登录
+      name: 'loginout'
+    }, function (ret) {
+      var eFootLis = $api.domAll('#footer li'),
+        eHeaderLis = $api.domAll('header li');
+      ReturnToIndexPage('0');
+      api.removeEventListener({
+        name: 'viewappear'
+      });
+      $api.removeCls(eFootLis[4], 'active');
+      $api.removeCls(eHeaderLis[4], 'active');
+      $api.addCls(eFootLis[0], 'active');
+      $api.addCls(eHeaderLis[0], 'active');
+      $api.css($api.byId('cart_count'), 'display:none;');
+      api.execScript({
+        name: 'root',
+        frameName: 'main_body',
+        script: 'RefreshList()'
+      });
+    });
+    // 有fxshopid则显示为我是店主
+    // if (getname('SessionShopID')) {
+    //   $api.byId('groupbuy').innerHTML = '我是店主'
+    // }
+    api.addEventListener({
+      name: 'viewappear'
+    }, function (ret, err) {
+      ShoppingCartCount();
+      api.sendEvent({
+        name: 'rootonshow'
+      });
+    })
+    api.addEventListener({
+      name: 'payorderCart'
+    }, function () {
+      ShoppingCartCount()
+    })
+    // 回到首页
+    api.addEventListener({
+      name: 'gobackroot'
+    }, function (ret, err) {
+      goBackRoot()
+    })
+    // 监听开店礼包购买成功
+    // api.addEventListener({
+    //   name: 'buyOpenShop'
+    // }, function (ret, err) {
+    //   $api.byId('groupbuy').innerHTML = '我是店主'
+    // })
+    // api.addEventListener({
+    //   name: 'loginSuccess'
+    // }, function (ret, err) {
+    //   if (getname('SessionShopID')) {
+    //     $api.byId('groupbuy').innerHTML = '我是店主'
+    //   } else {
+    //     $api.byId('groupbuy').innerHTML = '申请开店'
+    //   }
+    // });
+    getCitys()
+  }
+
+  //--------------监听事件
+  function ListeningEvent() {
+    if (api.getPrefs({
+        sync: true,
+        key: 'loginStatus'
+      }) != "loginSuccess") {
+      ListenLoginSuccess();
+    } else {
+      ShoppingCartCount()
+    }
+
+  }
+  // 监听开店礼包购买成功
+
+  //监听登录
+  function ListenLoginSuccess() {
+    api.addEventListener({
+      name: 'loginSuccess'
+    }, function (ret, err) {
+      if (ret) {
+        ShoppingCartCount()
+        changePage(selecttag);
+      }
+    });
+  }
+  var frames = []
+
+  function indexfromgroud() {
+    // 团长与个人中心的framegroup
+    api.openFrameGroup({
+      name: 'switchPage',
+      preload: 0,
+      scrollEnabled: false,
+      rect: {
+        x: 0,
+        y: 0,
+        w: api.winWidth,
+        h: api.winHeight - $api.dom('#footer').offsetHeight
+      },
+      index: 0,
+      frames: [{
+        name: 'notice',
+        url: './notice.html',
+        bgColor: '#fff',
+        bounces: true,
+        useWKWebView: true,
+        pageParam: {}
+      }, {
+        name: 'tz',
+        url: './tz.html',
+        bgColor: '#fff',
+        bounces: true,
+        useWKWebView: true,
+        pageParam: {}
+      }, {
+        name: 'my_center',
+        url: './my_center.html',
+        bgColor: '#fff',
+        bounces: true,
+        useWKWebView: true,
+        pageParam: {}
+      }]
+    }, function (ret, err) {});
+    api.setFrameGroupAttr({
+      name: 'switchPage',
+      hidden: true,
+    })
+
+    api.ajax({
+      url: siteUrl + 'Main/Main/GetAllGBClassJson',
+      method: 'get',
+      timeout: 10
+    }, function (ret, err) {
+      if (ret) {
+        if (ret.success) {
+          if (ret.status == 1 && ret.Data != null) {
+            var data = ret.Data;
+            if (data.length > 0) {
+              //写一个文件做缓存,接口不通就读这个
+              var datatime = $api.jsonToStr(data)
+              api.writeFile({
+                path: "fs://classid.json",
+                data: datatime
+              }, function (ret, err) {
+                if (ret.status) {
+                  //成功
+                } else {
+                  promptMsg('写入缓存失败' + err.code)
+                }
+              });
+              frames.push({
+                name: 'shouye',
+                url: './main.html',
+                bgColor: '#fff',
+                bounces: true,
+                useWKWebView: true
+              })
+              data.forEach(function (item, index) {
+                frames.push({
+                  name: 'fenlei' + index,
+                  url: './main_pingdao.html',
+                  bgColor: '#fff',
+                  bounces: true,
+                  pageParam: {
+                    classid: item.cla.classid,
+                    name: item.cla.name
+                  }
+                })
+              })
+            }
+            openpingdao()
+          } else {
+            promptMsg(ret.err);
+          }
+        } else {
+          promptMsg(ret.err);
+        }
+        hideLoading()
+      } else {
+        if (classdata) {
+          openpingdao(1)
+        } else {
+          if (err.code == 0) {
+            alert('网络连接错误,请检查网络');
+          } else if (err.code == 1) {
+            alert('网络请求超时');
+          } else {
+            promptMsg(err.msg);
+          }
+          $api.removeCls($api.byId('diaoxian'), 'hide')
+          hideLoading()
+        }
+      }
+    });
+  }
+
+  function openpingdao(types) {
+    //接口不通读这个
+    if (types) {
+      frames.push({
+        name: 'shouye',
+        url: './main.html',
+        bgColor: '#fff',
+        bounces: true,
+        useWKWebView: true
+      })
+      $api.strToJson(classdata).forEach(function (item, index) {
+        frames.push({
+          name: 'fenlei' + index,
+          url: './main_pingdao.html',
+          bgColor: '#fff',
+          bounces: true,
+          pageParam: {
+            classid: item.cla.classid,
+            name: item.cla.name
+          }
+        })
+      })
+    }
+    api.openFrameGroup({
+      name: 'mainpingdao',
+      preload: 0,
+      rect: {
+        x: 0,
+        y: 86 + Number(statustop),
+        w: api.winWidth,
+        h: api.winHeight - $api.dom('#footer').offsetHeight - 86 - Number(statustop)
+      },
+      index: 0,
+      frames: frames
+    }, function (ret, err) {
+      //  首次打开不加载rootcheack,阻止首页报错
+       
+      if (rootCheack) {
+        api.execScript({
+          frameName: 'main_top',
+          script: 'rootcheack(\'' + ret.index + '\')'
+        })
+      } else {
+        rootCheack = true
+      }
+      if (ret.index == 0) {
+        api.setFrameGroupAttr({
+          name: 'mainpingdao',
+          scrollEnabled: false
+        });
+      } else {
+        api.setFrameGroupAttr({
+          name: 'mainpingdao',
+          scrollEnabled: true
+        });
+      }
+    });
+
+    api.openFrame({
+      name: 'main_top',
+      url: './maintop.html',
+      rect: {
+        x: 0,
+        y: 0,
+        w: 'auto',
+        h: 90 + Number(statustop)
+      },
+      bgColor: '#fff',
+      pageParam: {},
+      bounces: false
+    });
+  }
+
+  //首页频道控制点击跳转
+  function kongzhi(index) {
+    api.setFrameGroupIndex({
+      name: 'mainpingdao',
+      index: index
+    });
+  }
+  // 随意切换按钮
+  function randomSwitchBtn(tag, ischeck) {
+    if (ischeck) {
+      if (checkLoginStatus()) {
+        selecttag = tag;
+        changePage(tag);
+      }
+    } else {
+      selecttag = tag;
+      changePage(tag);
+
+    }
+  }
+
+  function goBackRoot() {
+    var eFootLis = $api.domAll('#footer li')
+    for (var i = 0, len = eFootLis.length; i < len; i++) {
+      $api.removeCls(eFootLis[i], 'active');
+    }
+    $api.addCls(eFootLis[0], 'active');
+    api.setFrameAttr({
+      name: 'main_top',
+      hidden: false
+    });
+    api.setFrameGroupAttr({
+      name: 'group',
+      hidden: true
+    });
+    api.setFrameGroupAttr({
+      name: 'mainpingdao',
+      hidden: false
+    });
+  }
+  //bianhuan
+  function changePage(tag) {
+    // 如果在首页其他频道，点击底部首页按钮 返回首页第一个选项页面
+    var tabIndex = 0
+    var footerLi = $api.domAll('#footer li')
+    for (var k = 0, len = footerLi.length; k < len; k++) {
+      if (tag == footerLi[i]) {
+        tabIndex = i;
+      }
+    }
+    if (tag == $api.dom('#footer li.active') && tabIndex == 0) kongzhi(0)
+    /* end */
+
+    if (tag == $api.dom('#footer li.active')) return;
+    var eFootLis = $api.domAll('#footer li'), //tab选项卡
+      eHeaderLis = $api.domAll('header li'), //容器
+      index = 0; //当前选中的下标
+    for (var i = 0, len = eFootLis.length; i < len; i++) {
+      if (tag == eFootLis[i]) {
+        index = i;
+      } else {
+        $api.removeCls(eFootLis[i], 'active');
+        $api.removeCls(eHeaderLis[i], 'active');
+      }
+    }
+    $api.addCls(eFootLis[index], 'active');
+    $api.addCls(eHeaderLis[index], 'active');
+    // console.log('112211' + index)
+    if (index == 0) {
+      api.setFrameAttr({
+        name: 'main_top',
+        hidden: false
+      });
+      api.setFrameGroupAttr({
+        name: 'group',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'switchPage',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'mainpingdao',
+        hidden: false
+      })
+    } else if (index == 1) {
+      api.setFrameAttr({
+        name: 'main_top',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'mainpingdao',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'switchPage',
+        hidden: false
+      })
+      api.setFrameGroupIndex({
+        name: 'switchPage',
+        index: 0
+      });
+    } else if (index == 2) {
+      api.setFrameAttr({
+        name: 'main_top',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'mainpingdao',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'switchPage',
+        hidden: false
+      })
+      api.setFrameGroupIndex({
+        name: 'switchPage',
+        index: 1
+      });
+    } else if (index == 3) {
+      api.setFrameAttr({
+        name: 'main_top',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'mainpingdao',
+        hidden: true
+      });
+      api.setFrameGroupAttr({
+        name: 'switchPage',
+        hidden: false
+      })
+      api.setFrameGroupIndex({
+        name: 'switchPage',
+        index: 2
+      });
+    }
+  }
+
+  //购物车数量通知
+  function ShoppingCartCount() {
+    return
+    api.ajax({
+      url: siteUrl + 'Main/Shopping/GetCartProCount',
+      method: 'get',
+      data: {
+        values: {
+          uid: api.getPrefs({
+            sync: true,
+            key: 'SessionUserID'
+          })
+        }
+      }
+    }, function (ret, err) {
+      if (ret) {
+        if (ret.success) {
+          if (ret.status == 1 && ret.Data != null) {
+            if (ret.Data != 0) {
+              var cartCount = $api.byId('cart_count');
+              if (ret.Data > 99) {
+                $api.css(cartCount, 'display:block;');
+                $api.html(cartCount, '99+');
+              } else {
+                $api.css(cartCount, 'display:block;');
+                $api.html(cartCount, ret.Data);
+              }
+            } else {
+              var cartCount = $api.byId('cart_count');
+              $api.css(cartCount, 'display:none;');
+              $api.html(cartCount, ret.Data);
+            }
+          } else {
+            promptMsg(ret.err);
+          }
+        } else {
+          promptMsg(ret.err);
+        }
+      } else {
+        promptMsg(err.msg);
+      }
+    });
+  }
+
+  //登录跳转回首页 接受页码参数
+  function ReturnToIndexPage(pageindex) {
+    //5是分类页面 首页图标变黑
+    if (pageindex == 5) {
+      var eFootLis = $api.domAll('#footer li'), //tab选项卡
+        eHeaderLis = $api.domAll('header li'), //容器
+        index = 0; //当前选中的下标
+      for (var i = 0, len = eFootLis.length; i < len; i++) {
+        $api.removeCls(eFootLis[i], 'active');
+        $api.removeCls(eHeaderLis[i], 'active');
+      }
+      api.setFrameGroupIndex({
+        name: 'group',
+        index: 5,
+        reload: true
+      })
+    } else {
+      var tag = $api.dom('#footer .index_btn_' + pageindex);
+      changePage(tag);
+    }
+  }
+
+  // 随意切换按钮
+  function yshoprandomSwitchBtn(tag, ischeck) {
+    if (ischeck) {
+      if (checkLoginStatus()) {
+        var fxshopid = api.getPrefs({
+          sync: true,
+          key: 'SessionShopID'
+        });
+        if (fxshopid != null && fxshopid != "") {
+          selecttag = tag;
+          changePage(tag);
+        } else {
+          api.ajax({
+            url: siteUrl + 'Main/Member/CheckFxShop',
+            method: 'get',
+            data: {
+              values: {
+                uid: api.getPrefs({
+                  sync: true,
+                  key: 'SessionUserID'
+                })
+              }
+            },
+            headers: {
+              Authorization: api.getPrefs({
+                sync: true,
+                key: 'SessionKey'
+              })
+            }
+          }, function (ret, err) {
+            if (ret) {
+              if (ret.success) {
+                console.log($api.jsonToStr(ret));
+                if (ret.status == 0) {
+                  api.openWin({
+                    name: 'yshopapply',
+                    url: './yshopapply.html',
+                    bgColor: '#fff'
+                  });
+                } else if (ret.status == 1 && ret.fxshopId == '') {
+                  promptMsg('自动开店失败,请联系客服')
+                } else if (ret.status == 1 && ret.fxshopId != '') {
+                  api.setPrefs({
+                    key: 'SessionShopID',
+                    value: ret.fxshopId
+                  });
+                  changePage(tag);
+                }
+              } else {
+                promptMsg(ret.err)
+              }
+            } else {
+              promptMsg(err.msg);
+            }
+          });
+        }
+      }
+    } else {
+      selecttag = tag;
+      changePage(tag);
+
+    }
+  }
+
+  function getCitys() {
+  var cityFile = api.readFile({
+      sync: true,
+      path: "fs://cityes.json"
+  });
+  if(!cityFile) {
+    showLoading()
+    api.ajax({
+      url: siteUrl +'Main/Main/GetDistrict',
+      method: 'get',
+      data: {
+        values: {
+          uid: api.getPrefs({sync: true,key: 'SessionUserID'})
+        }
+      },
+      headers:{
+        "Authorization": api.getPrefs({sync: true,key: 'SessionKey'}),
+        "Content-Type": 'application/json; charset=utf-8'
+      }
+    }, function(ret, err) {
+      if(ret.success) {
+        api.writeFile({
+        path: "fs://cityes.json",
+        data: $api.jsonToStr(refull(ret.Data))
+        }, function(ret, err) {
+            if (ret.status) {
+                //成功
+            } else {
+            }
+        });
+
+      }
+      hideLoading()
+    })
+  }
+}
+</script>

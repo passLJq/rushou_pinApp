@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="format-detection" content="telephone=no" />
+  <title>销售订单明细</title>
+  <link rel="stylesheet" href="./common/css/api.css">
+  <style>
+    body{background-color: #F3F2F2;}
+    .top_title_container{background-color: #fff; text-align: center; margin-bottom: 8px; position: relative; height: 100px; width: 100%; overflow: hidden;}
+    .top_content_container{display:inline-block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}
+    .font_14{font-size: 14px; } .color_333{color: #333;} .fl{float: left; } .fr{float: right; } .clear:after{content: ""; display: block; clear: both;}
+    .fxorder_price{font-size: 24px; color: #AC9374; }
+    .list_container>li{width: 100%; height: 35px; line-height: 35px; overflow: hidden; box-sizing: border-box; padding: 0 12px; background-color: #fff;}
+    .list_container>li>span {font-size: 12px; color: #333;}
+    .list_container>li>span:nth-child(1) {color: #999;}
+  </style>
+</head>
+<body>
+  <div id="head">
+
+  </div>
+  <div class="top_title_container">
+    <div class="top_content_container">
+      <div class="font_14 color_333">可提现金额</div>
+      <div class="fxorder_price">&yen;<span id="fxorder_price">0.00</span></div>
+    </div>
+  </div>
+  <div>
+    <ul class="list_container">
+      <li class="clear">
+        <span class="fl">订单编号</span>
+        <span class="fr" id="orderid"></span>
+      </li>
+      <li class="clear">
+        <span class="fl">订单类型</span>
+        <span class="fr" id="ordertype"></span>
+      </li>
+      <li class="clear">
+        <span class="fl">订单状态</span>
+        <span class="fr" id="comtype"></span>
+      </li>
+      <li class="clear">
+        <span class="fl">下单时间</span>
+        <span class="fr" id="createtime"></span>
+      </li>
+      <li class="clear">
+        <span class="fl">订单金额</span>
+        <span class="fr" id="commision"></span>
+      </li>
+      <li class="clear">
+        <span class="fl">客户昵称</span>
+        <span class="fr" id="username"></span>
+      </li>
+    </ul>
+  </div>
+
+<script src="./common/js/api.js"></script>
+<script src="./common/js/config.js"></script>
+<script src="./common/js/common.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script>
+  if (openapp) {
+    window.apiready = function () {
+      isready()
+    }
+  } else {
+    window.onload = function () {
+      isready()
+    }
+  }
+  var isready = function() {
+    headTitle($api.byId('head'),'销售订单明细')
+    getMsg()
+  }
+  function getMsg() {
+    showLoading()
+    https({
+      url: siteUrl +'Main/Member/GetUserSalesDetail?devicetype=7',
+      method: 'get',
+      data:{
+        uid: getname(),
+        currentPage: 1,
+        pageSize: 1,
+        orderid: pageParam('orderid')
+      },
+      headers: 1,
+      successBack: function(ret, err) {
+        console.log($api.jsonToStr(ret));
+        if(ret){
+          if(ret.success){
+            if(ret.Data.length > 0) {
+              var data = ret.Data[0]
+              document.getElementById("orderid").innerHTML = data.orderid
+              if(data.ordertype=='劲爆拼团'){
+                document.getElementById("ordertype").innerHTML = data.ordertype+'(不计算销售额)'
+              }else{
+                document.getElementById("ordertype").innerHTML = data.ordertype
+              }
+              document.getElementById("comtype").innerHTML = data.comtype
+              document.getElementById("createtime").innerHTML = data.createtime
+              document.getElementById("fxorder_price").innerHTML = data.commision? data.commision: data.commision+"0.00"
+              document.getElementById("username").innerHTML = data.username
+              document.getElementById("commision").innerHTML = '&yen;'+data.amount
+            }
+        }else{
+            promptMsg(ret.err);
+          }
+        }
+        else{
+          promptMsg(ret.err);
+        }
+        hideLoading()
+    }
+  })
+  }
+
+</script>
+</body>
+</html>

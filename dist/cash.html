@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>钱包余额</title>
+  <link rel="stylesheet" href="./common/css/api.css">
+  <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+  <style>
+    body{background-color: #F3F2F2;margin-bottom: 60px; }
+    ul,ol{list-style: none;}
+    a{ color: #333; text-decoration: none;}
+   .commission_preview { background-color: #fff; position: relative; padding: 0 15px;}
+   .commission_preview li {background-color: #fff;}
+   .commission_list {color: #333; font-size: 14px; line-height: 2; padding: 10px 0;border-bottom:1px solid #F6F6FA; }
+   .commission_list_label { color: #999999; float: left; margin-right: 10px; min-width: 60px;text-align: justify; text-align-last: justify; }
+   .commission_list_value { display: block; overflow: hidden; overflow-wrap:break-word; word-break: normal; }
+   .height10 { height: 10px; background: #f8f8f8; }
+   .fr{float: right;} .fl{float: left;} .clear:after{content: ""; display: block; clear: both;}
+   .red_color{color: #FF422C;}
+   .hide{display: none;}
+   .list_top{font-size: 17px;}
+   .order_num{ -webkit-user-select:all; -moz-user-select:all; -ms-user-select:all; user-select:all;}
+
+  </style>
+</head>
+<body>
+  <div class="commission_preview" id="content_container">
+
+  </div>
+  <div style="text-align: center; " class="hide" id="loadMsg">
+    <img src="./image/loading_more.gif" alt="">
+  </div>
+  <!--没有显示记录-->
+ <div class="noRec hide" id="noRec">
+      <div class="square">
+         <img src="./img/nodata.png" alt="没有相关数据" style="width:100%;"/>
+      </div>
+     <div class="ic_text">亲，目前没有相关数据~</div>
+</div>
+
+<script src="./common/js/api.js"></script>
+<script src="./common/js/common.js"></script>
+<script src="./common/js/config.js"></script>
+<script>
+var page = 1;
+var pageSize =10;
+var noMore =false;
+if (openapp) {
+        window.apiready = function () {
+          isready()
+        }
+      } else {
+        window.onload = function () {
+          isready()
+        }
+      }
+ function isready() {
+    getMsg(page)
+
+    //下拉刷新
+    api.setCustomRefreshHeaderInfo({
+      bgColor: '#f8f8f8',
+      images: [
+          'widget://image/suaxin1.png',
+          'widget://image/suaxin2.png',
+          'widget://image/suaxin3.png',
+          'widget://image/suaxin4.png',
+          'widget://image/suaxin5.png',
+          'widget://image/suaxin6.png',
+          'widget://image/suaxin7.png'
+      ],
+      tips: {
+          pull: '下拉刷新',
+          threshold: '松开立即刷新',
+          load: '正在刷新'
+      }
+    }, function() {
+          $api.html($api.byId('content_container'), "")
+          page = 1;
+          $api.addCls($api.byId("noRec"), "hide")
+          setTimeout(function () {
+            getMsg(page);
+          }, 500)
+
+      });
+
+    api.addEventListener({name: 'scrolltobottom'}, function(ret, err){
+      if(noMore){
+        if(!$api.byId('no_more')){
+        $api.append(document.body, '<div id="no_more" style="color:#999;text-align:center;padding:10px 0; font-size: 12px; background-color: #F3F2F2; ">全部明细已显示</div>')
+       }
+        return;
+      }
+        page += 1;
+        getMsg(page, "isScrolltobottom")
+    });
+  }
+function getMsg(page_item, isScrolltobottom) {
+  if(!isScrolltobottom) showLoading()
+  $api.removeCls($api.byId("loadMsg"), 'hide');
+  https({
+    url: siteUrl +'Main/Member/CashConsumer?devicetype=7',
+    method: 'get',
+    data:{
+        uid: getname(),
+        currentPage: page_item,
+        pageSize: pageSize
+    },
+    headers:1,
+    successBack:function(ret){
+    if(ret) {
+      if(ret.success && ret.status == 1) {
+        var data = ret.Data
+        $api.html($api.byId("myInte"), ret.totalpoint)
+        if(data.length < pageSize){
+          noMore = true;
+        }else{
+          noMore = false;
+        }
+        var html = ""
+        if(data) {
+          for(var i = 0; i < data.length; i++) {
+            var title = "钱包支付";
+            var ordertitle = "订单金额";
+            var timetitle = "订单时间";
+            var Type = "-"
+            if (data[i].amount > 0) {
+                title = "钱包退款";
+                ordertitle = "退款金额";
+                timetitle = "退款时间"
+                Type = "+"
+            }
+            html += "<div class=\"commission_list\">";
+            html += "<p class=\"clear list_top\">";
+            html += "<span class=\"fl commission_list_value\">" + title + "</span>";
+            html += "<span class=\"fr commission_list_value "+(Type == "-"? 'red_color': '')+"\">" + Type +""+ Math.abs(data[i].amount) + "</span>";
+            html += "</p>";
+            html += "<p>";
+            html += "<label class=\"commission_list_label\">订单号</label>";
+            html += "<span class=\"commission_list_value order_num\">" + data[i].orderNo + "</span>";
+            html += "</p>";
+            // html += "<p>";
+            // html += "<label class=\"commission_list_label\">" + ordertitle + "</label>";
+            // html += "<span class=\"commission_list_value\">￥" + Math.abs(data[i].amount) + "</span>";
+            // html += "</p>";
+            html += "<p>";
+            // html += "<label class=\"commission_list_label\">" + timetitle + "</label>";
+            html += "<label class=\"commission_list_label\">订单时间  </label>";
+            html += "<span class=\"commission_list_value\">" + data[i].time + "</span>";
+            html += "</p>";
+            html += "</div>";
+            // html += "<div class=\"height10\"></div>";
+          }
+          if(page_item == 1){
+            $api.html($api.byId('content_container'), html)
+          }else{
+            $api.append($api.byId('content_container'), html)
+          }
+        }
+        else {
+          $api.removeCls($api.byId("noRec"), "hide")
+        }
+      }else {
+        $api.removeCls($api.byId("noRec"), "hide")
+      }
+    }
+    hideLoading()
+    api.refreshHeaderLoadDone();
+    $api.addCls($api.byId("loadMsg"), 'hide');
+  }
+}
+)
+}
+function getstate(status) {
+  switch (status){
+    case 1:
+      return "待到账"
+    case 2:
+      return "已到账"
+    case 3:
+      return "已失效"
+  }
+}
+</script>
+</body>
+</html>

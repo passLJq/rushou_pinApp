@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="./common/css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="./common/css/style.css"/>
+    <style>
+    .wrap{width:100%;margin:0;padding-bottom:62px}
+    a:link{color:#666}
+    a:visited{text-decoration:none;color:#666464}
+    .menber-img{font-size:15px;text-align:center;margin-top:93px;color:#999}
+    .menber-img.mobil-key img{width:90px;height:90px;margin-bottom: 12px;}
+    .menber-img.mobil-key h1{font-size:26px}
+    .menber-img.mobil-key.shop{margin-bottom:93px}
+    .menber-img.mobil-key{color:#2C5B33;font-size:16px}
+    .menber-list-li{color:#666;height:56px;line-height:56px;margin-bottom:2px;padding-left:12px;background:#FFF;position:relative;max-width:720px;text-align:left;font-size:17px}
+    .menber-list-li:after{content:'';display:block;position:absolute;height:8px;width:8px;border-top:2px solid #d1d1d1;border-right:2px solid #d1d1d1;transform:rotate(45deg);right:15px;top:22px}
+    .menber-list-li a{display:block}
+
+    </style>
+</head>
+<body>
+  <div class="wrap">
+      <div class="menber-img mobil-key shop">
+          <img src="./image/keyback-success.png">
+          <h1>支付成功</h1>
+          <p>我们将尽快为您发货</p>
+      </div>
+      <div class="menber-list-li shop"><a id="btnEnter"  href="javascript:void(0)" onclick="ReturnToIndex(4)">查看订单</a></div>
+      <div class="menber-list-li shop"><a href="jvaascript:void(0)" onclick="ReturnToIndex(0)">继续购物</a></div>
+  </div>
+    <script type="text/javascript" src="./common/js/api.js"></script>
+    <script type="text/javascript" src="./common/js/config.js"></script>
+    <script type="text/javascript" src="./common/js/common.js"></script>
+    <script>
+
+        if (openapp) {
+          apiready = function(){
+            onready()
+          }
+        } else {
+          window.onload = function () {
+            onready()
+          }
+        }
+
+        var onready = function () {
+          // 阻止首页弹动
+          api.setWinAttr({
+              bounces: false
+          });
+          // 阻止首页弹动 end
+          setTimeout(function(){
+            api.execScript({
+                name: 'ordercomfirm',
+                script: 'close();'
+            });
+          },1000);
+          setTimeout(function(){
+            api.execScript({
+              name: 'packageordercomfirm',
+              script: 'close();'
+            })
+          },1000)
+        }
+
+    </script>
+</body>
+</html>

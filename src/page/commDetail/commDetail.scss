@@ -1,0 +1,98 @@
+#main {
+  padding: rems(20);
+}
+.head {
+  width: 100%;
+  min-height: rems(350);
+  background:linear-gradient(270deg,rgba(254,51,75,1) 0%,rgba(255,114,130,1) 100%);
+  border-radius: rems(16);
+  padding: rems(44) rems(30) rems(40) rems(30);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    div:nth-child(1) {
+      display: flex;
+      flex-direction: column;
+      p {
+        font-size: rems(24);
+        color: #fff;
+        span {
+          font-size: rems(24);
+          color: #fff;
+          margin-left: rems(15);
+        }
+      }
+      p:nth-child(2) {
+        font-size: rems(40);
+        font-weight: 600;
+        // line-height: rems(56);
+        margin: rems(10) 0;
+      }
+    }
+    .btn {
+      font-size: rems(28);
+      font-weight: 600;
+      padding: rems(10) rems(40);
+      border-radius: rems(35);
+      border: 1px solid rgba(255,255,255,1);
+      color: #fff;
+      // line-height: rems(6);
+    }
+  }
+
+  .bot {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    div {
+      width: 25%;
+      p {
+        font-size: rems(24);
+        color: #fff;
+        text-align: center;
+        line-height: rems(40);
+      }
+    }
+  }
+
+}
+
+.shouyi {
+  width: 100%;
+  margin-top: rems(15);
+  .title {
+    font-size: rems(34);
+    color: #333;
+    padding: rems(18) rems(24);
+    font-weight: 600 !important;
+    border-bottom: 1px solid #f6f6fa;
+  }
+  .item {
+    width: 100%;
+    height: rems(96);
+    color: #333;
+    font-size: rems(28);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f6f6fa;
+    span {
+      color: #999;
+      margin-left: rems(15);
+    }
+  }
+}
+
+#container {
+  width: 100%;
+  height: rems(544);
+  margin-top: rems(20);
+  background:rgba(255,255,255,1);
+  box-shadow:0 rems(1) rems(40) 0 rgba(216,216,216,0.5);
+  border-radius: 8px;
+}

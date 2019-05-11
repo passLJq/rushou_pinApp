@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>修改资料</title>
+  <link rel="stylesheet" type="text/css" href="./common/css/api.css" />
+
+  <style>
+    body {
+      background-color: #fff;
+    }
+
+    .hide {
+      display: none !important;
+    }
+
+    /*.content_container{text-align: center; position: fixed; top: 40%; left: 0; transform: translateY(-50%); width: 100%;}*/
+    .content_container {
+      margin-top: 52px;
+      text-align: center;
+    }
+
+    #headr {
+      -moz-box-shadow: 0px 0px 14px #f5f4f4;
+      -webkit-box-shadow: 0px 0px 14px #f5f4f4;
+      box-shadow: 0px 0px 14px #f5f4f4;
+    }
+
+    #headr>div {
+      border: 0;
+    }
+
+    .content_container>h1 {
+      margin: 0px 0px 18px 0;
+      font-size: 24px;
+      color: #000;
+    }
+
+    .content_container>p {
+      font-size: 14px;
+      color: #000;
+    }
+
+    .btn_weixin {
+      display: block;
+      color: #62B900;
+      font-weight: 400;
+      margin: 52px 40px 10px;
+      text-align: center;
+      border: 1px solid #62B900;
+      border-radius: 40px;
+      height: 44px;
+      line-height: 44px;
+      background-color: #fff;
+    }
+
+    /*个人昵称修改*/
+    .name_container {
+      height: 60px;
+      line-height: 60px;
+      margin-top: 20px;
+      padding: 0 20px;
+    }
+
+    .name_container>input {
+      width: 100%;
+      height: 100%;
+      border-bottom: 1px solid #F6F6FA;
+      color: #333;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .btn_save {
+      width: 80%;
+      background-color: #D8D8D8;
+      color: #fff;
+      border-radius: 22px;
+      margin: 0 auto;
+      height: 44px;
+      line-height: 44px;
+      text-align: center;
+      margin-top: 54px;
+      font-size: 14px;
+    }
+
+    .btn_save.can_active {
+      background-color: #F72133;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="headr"></div>
+  <div class="content_container hide" id="box_weixin">
+    <h1>Hi, <span id="user_name"></span></h1>
+    <p id="noBind_msg" class="hide">为了您的服务权益，请绑定您的微信号码</p>
+    <p id="isBind_msg" class="hide">恭喜您, 已绑定成功</p>
+    <div onclick="WeLoginIn()" class="btn_weixin hide"><img src="./image/weixin_logo.png"
+        style=" width:21.5px;height:17.5px;vertical-align: middle; padding-right: 10px;">绑定微信</div>
+  </div>
+  <div id="box_name" class="hide">
+    <div class="name_container">
+      <input type="text" placeholder="请输入您的昵称,3-11位数字,中文,字母或_" id="uname" onkeyup="changeBg(this)" maxlength="11"
+        value="">
+    </div>
+    <div class="btn_save_container">
+      <div class="btn_save" onclick="subMit()">保存</div>
+    </div>
+  </div>
+  <div class="btn_save_container hide" id="jiebang">
+    <div class="btn_save can_active" onclick="clearwechar()">解除绑定</div>
+  </div>
+</body>
+<script type="text/javascript" src="./common/js/api.js"></script>
+<script type="text/javascript" src="./common/js/config.js"></script>
+<script type="text/javascript" src="./common/js/common.js"></script>
+<script type="text/javascript">
+  if (openapp) {
+    window.apiready = function () {
+      isready()
+    }
+  } else {
+    window.onload = function () {
+      isready()
+    }
+  }
+  var isready = function () {
+    $api.html($api.byId("user_name"), pageParam('uname'))
+    if (pageParam('isChangeName')) {
+      headTitle(document.getElementById('headr'), '修改昵称');
+      $api.removeCls($api.byId("box_name"), "hide")
+    } else if (pageParam('uname')) {
+      headTitle(document.getElementById('headr'), '绑定微信');
+      $api.removeCls($api.byId("box_weixin"), "hide")
+    }
+    if (pageParam('isBind')) {
+      $api.removeCls($api.byId("isBind_msg"), 'hide');
+      $api.removeCls($api.byId("jiebang"), 'hide');
+    } else {
+      $api.removeCls($api.byId("noBind_msg"), 'hide');
+      $api.removeCls($api.dom(".btn_weixin"), 'hide');
+    }
+    if (window.api) {
+      var wx = api.require('wx');
+      wx.isInstalled(function (ret, err) {
+        if (ret.installed) {
+
+        } else {
+          $api.html($api.byId("noBind_msg"), '您未安装微信, 为了您的服务权益，请安装绑定您的微信号码');
+          $api.addCls($api.dom(".btn_weixin"), 'hide');
+        }
+      });
+    }
+  };
+
+  function WeLoginIn() {
+    var wx = api.require('wx');
+    wx.auth({
+      apiKey: ''
+    }, function (ret, err) {
+      if (ret.status) {
+        var code = ret.code;
+        //授权登录
+        api.ajax({
+          url: siteUrl + 'Main/Login/LoginInWeChat?devicetype=7',
+          method: 'get',
+          dataType: 'json',
+          data: {
+            values: {
+              code: code
+            }
+          }
+        }, function (ret, err) {
+          if (ret) {
+            if (ret.success) {
+              if (ret.status == 1) {
+                //登录成功
+                //跳转视图
+                promptMsg('绑定成功');
+                api.closeWin({
+                  type: "none",
+                  duration: 100
+                });
+              } else if (ret.status == 100) {
+                // api.showProgress({
+                //     text: '系统正在处理，请耐心等待...',
+                //     modal: true
+                // });
+                if (ret.data.accesstoken != null && ret.data.openid != null) {
+                  api.openWin({
+                    name: 'login_bindmobile',
+                    url: './login_bindmobile.html',
+                    pageParam: {
+                      accesstoken: ret.data.accesstoken,
+                      openid: ret.data.openid,
+                      refreshtoken: ret.data.refreshtoken,
+                      expiresin: ret.data.expiresin,
+                      headphoto: ret.data.headphoto,
+                      userName: ret.data.username
+                    }
+                  });
+                } else {
+                  promptMsg('返回参数错误');
+                }
+              } else {
+                promptMsg(ret.err);
+              }
+            } else {
+              promptMsg(ret.err);
+            }
+          } else {
+            promptMsg(err.msg);
+          }
+        });
+
+      } else {
+        switch (err.code) {
+          case -1:
+            promptMsg("当前设备未安装微信，请使用账号以及验证码登录");
+            break;
+          case 1:
+            promptMsg("您已取消授权登录");
+            break;
+          case 2:
+            promptMsg("您拒绝授权，登录失败");
+            break;
+          case 3:
+            promptMsg("当前设备未安装微信，请使用账号以及验证码登录");
+            break;
+          default:
+            promptMsg("当前设备未安装微信，请使用账号以及验证码登录");
+            break;
+        }
+
+      }
+    });
+  }
+
+  function subMit() {
+    var name = document.getElementById("uname")
+    if (name.value == '' || name.value.length < 3 || name.value.length > 11 || !nameReplace(name)) {
+      promptMsg('昵称为3-11位数字,字母,中文或_');
+      name.value = ""
+      name.focus()
+      return
+    }
+    // api.execScript({
+    //     name: 'userdata',
+    //     script: 'postMsg(1,\''+name.value+'\');'
+    // });
+    api.sendEvent({
+      name: 'changeUserName',
+      extra: {
+        name: name.value
+      }
+    })
+    setTimeout(function () {
+      api.closeWin()
+    }, 500)
+  }
+
+  function closeThisWin() {
+    api.closeWin({
+      name: api.winName
+    });
+
+  }
+
+  function nameReplace(self) {
+    if (/[^\u4E00-\u9FA5A-Za-z0-9_]/ig.test(self.value)) {
+      return false
+    }
+    return true
+  }
+
+  function changeBg(obj) {
+    if (obj.value.length > 2) {
+      $api.addCls($api.dom(".btn_save"), 'can_active');
+    } else {
+      $api.removeCls($api.dom(".btn_save"), 'can_active');
+    }
+  }
+
+  function clearwechar() {
+    comfirmDialogBox("您确定要解除绑定吗?", function () {
+      api.ajax({
+        url: siteUrl + 'Main/Login/UnbindWx?devicetype=7&uid=' + api.getPrefs({
+          sync: true,
+          key: 'SessionUserID'
+        }),
+        method: 'post',
+        dataType: 'json',
+        data: {
+          body: {
+            uid: api.getPrefs({
+              sync: true,
+              key: 'SessionUserID'
+            })
+          }
+        },
+        headers: {
+          Authorization: api.getPrefs({
+            sync: true,
+            key: 'SessionKey'
+          }),
+          "Content-Type": 'application/json; charset=utf-8'
+        }
+      }, function (ret, err) {
+        console.log($api.jsonToStr(ret))
+        if (ret) {
+          if (ret.success && ret.status == 1) {
+            promptMsg('解绑成功');
+            //清除数据退出登录
+            api.removePrefs({
+              key: 'SessionUserID'
+            });
+            api.removePrefs({
+              key: 'SessionName'
+            });
+            api.removePrefs({
+              key: 'SessionKey'
+            });
+            api.removePrefs({
+              key: 'SessionShopID'
+            });
+            api.setPrefs({
+              key: 'loginStatus',
+              value: 'loginFail'
+            });
+            api.alert({
+              msg: "成功退出登录"
+            }, function () {
+              ReturnToIndex(0)
+              api.sendEvent({
+                name: 'loginout'
+              });
+            });
+          } else {
+            promptMsg(ret.err);
+          }
+        } else {
+          promptMsg(err.msg);
+        }
+      })
+    })
+  }
+</script>
+
+</html>

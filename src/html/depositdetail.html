@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>提现记录</title>
+  <link rel="stylesheet" href="./common/css/api.css">
+  <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+  <style>
+    body{background-color: #F3F2F2; }
+    ul,ol{list-style: none;}
+    a{ color: #333; text-decoration: none;}
+   .hide{display: none;}
+   #top-title {
+    background:linear-gradient(270deg,rgba(254,51,75,1) 0%,rgba(255,114,130,1) 100%);
+   color: #FFF;
+   padding: 10px;
+   max-width: 720px;
+   margin: 0 auto;
+}
+#top-title span {
+    font-size: 16px;
+}
+.wrap, .pagemain {
+    max-width: 720px;
+    /* margin: 20px 10px 0px; */
+    padding-bottom: 85px;
+}
+@media only screen and (max-width: 400px){ .wrap, .pagemain { max-width: 720px; /* margin: 20px 10px 0px; */ padding-bottom: 85px; margin: 0 auto; } }
+.wrap {
+    /* padding: 10px; */
+    margin: 0 auto 55px auto;
+}
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    font: inherit;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+table.detial {
+    background: #FFF;
+    width: 100%;
+    border: 1px solid #e6e6e6;
+}
+.detial tr {
+    border-bottom: 1px solid #d4d4d4;
+    width: 100%;
+    overflow: hidden;
+    font-size: 13px;
+}
+.detial th {
+    background: #fff;
+    padding: 10px 0;
+    text-align: center;
+    width: 20%;
+}
+.detial tr td {
+    text-align: center;
+}
+.detial tr td:nth-of-type(1) {
+    padding: 10px 0;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+      <p id="top-title">已提现金额：<span id="yitix">&yen;0.00</span></p>
+  </header>
+  <div class="wrap">
+      <table class="detial">
+          <tr>
+              <!-- <th>提现方式</th> -->
+              <th>提现时间
+              </th>
+              <th>提现金额
+              </th>
+              <th>手续费
+              </th>
+              <th>状态
+              </th>
+          </tr>
+      </table>
+      <div style="text-align: center; " class="hide" id="loadMsg">
+        <img src="./image/loading_more.gif" alt="">
+      </div>
+      <!--没有显示记录-->
+     <div class="noRec hide" id="noRec">
+      <!-- <div class="noRec" id="noRec"> -->
+          <div class="square">
+             <img src="./img/orderno.png" alt="没有相关数据" style="width:100%;"/>
+          </div>
+         <div class="ic_text">亲，目前没有相关数据~</div>
+    </div>
+  </div>
+
+  <script src="./common/js/api.js"></script>
+  <script src="./common/js/common.js"></script>
+  <script src="./common/js/config.js"></script>
+<script>
+  var page = 1;
+  var pageSize =10;
+  var noMore =false;
+  var type = 1;
+  if(openapp){
+    window.apiready = function () {
+      data()
+    }
+  }else{
+    window.onload=function(){
+      data()
+    }
+  }
+
+function data(){
+  getMsg(page)
+
+  if(window.api){
+    //下拉刷新
+    api.setCustomRefreshHeaderInfo({
+      bgColor: '#f8f8f8',
+      images: [
+          'widget://image/suaxin1.png',
+          'widget://image/suaxin2.png',
+          'widget://image/suaxin3.png',
+          'widget://image/suaxin4.png',
+          'widget://image/suaxin5.png',
+          'widget://image/suaxin6.png',
+          'widget://image/suaxin7.png'
+      ],
+      tips: {
+          pull: '下拉刷新',
+          threshold: '松开立即刷新',
+          load: '正在刷新'
+      }
+    }, function() {
+          $api.html($api.dom('.detial'), '<tr><th>提现时间</th><th>提现金额</th><th>手续费</th><th>状态</th></tr>')
+          page = 1;
+          $api.addCls($api.byId("noRec"), "hide")
+          setTimeout(function () {
+            getMsg(page);
+          }, 500)
+
+      });
+
+    api.addEventListener({name: 'scrolltobottom'}, function(ret, err){
+      if(noMore){
+        if(!$api.byId('no_more')){
+          $api.append($api.dom('.wrap'), '<div id="no_more" style="color:#A2A2A2;text-align:center;padding:10px 0;">-没有更多数据了-</div>')
+        }
+        return;
+      }
+      page += 1;
+      getMsg(page)
+    });
+  }
+}
+
+function getMsg(page_item) {
+  if(window.api){
+    showLoading()
+  } 
+  $api.removeCls($api.byId("loadMsg"), 'hide');
+  https({
+    url: siteUrl +'Main/Member/DepositDetail?devicetype=7',
+    method: 'get',
+    data:{
+        uid: getname(),
+        currentPage: page_item,
+        pageSize: pageSize
+    },
+    headers:1,
+    successBack:function(ret){
+      console.log(ret)
+      if(ret.success && ret.status == 1) {
+        var data = ret.Data
+        if(data.list.length < pageSize){
+          noMore = true;
+        }else{
+          noMore = false;
+        }
+        var html = ""
+
+        if(data && data.list.length > 0) {
+          $api.html($api.byId("yitix"), "&yen;&nbsp;"+data.hasdeposit)
+          for(var i = 0; i < data.list.length; i++) {
+            var statusName = data.list[i].status == 0? "未处理":data.list[i].status == 1? "处理中": data.list[i].status == 2? "已完成": data.list[i].status == 4?"异常":"已关闭"
+            html += '<tr>'
+            // html += '<td>' + data.list[i].wayname + '</td>'
+            html += '<td>' + data.list[i].createtime + '</td>'
+            html += '<td>&yen;' + data.list[i].amount + '</td>'
+            html += '<td>&yen;' + data.list[i].servicefee + '</td>'
+            html += '<td>' + statusName + '</td>'
+            html += '</tr>'
+          }
+          if(page_item == 1){
+            $api.append($api.dom('.detial'), html)
+          }else{
+            $api.append($api.dom('.detial'), html)
+          }
+        } else {
+          // 第一页加载没数据再显示 无数据图
+          if (page == 1) {
+            $api.removeCls($api.byId("noRec"), "hide")
+          }
+        } 
+      }else {
+        $api.removeCls($api.byId("noRec"), "hide")
+      }
+      $api.addCls($api.byId("loadMsg"), 'hide');
+      hideLoading()
+      refreshDone()
+    }
+  })
+}
+</script>
+</body>
+</html>

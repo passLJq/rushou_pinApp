@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+  <title>title</title>
+  <link rel="stylesheet" type="text/css" href="./common/css/api.css" />
+  <link rel="stylesheet" type="text/css" href="./common/css/style.css" />
+  <style>
+    body {
+      background-color: #fff
+    }
+    #header {
+      background-color: #fff;
+    }
+    .kefuimg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .gongzhonghao {
+      width: 200px;
+      height: 200px;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      color: rgb(254, 84, 67);
+      justify-content: center;
+    }
+
+    .phon {
+      width: 20px;
+      height: 20px;
+      margin-right: 5px
+    }
+
+    a {
+      text-decoration: none;
+      color: rgb(254, 84, 67)
+    }
+  </style>
+</head>
+
+<body>
+  <div id="head"></div>
+  <div>
+    <img src="./image/kefu.png" alt="" class="kefuimg">
+  </div>
+  <div style="margin:0 auto;text-align:center">
+    <img src="./image/gongzonghao.jpg" alt="" class="gongzhonghao" onclick="chexiao()">
+    <h3>官方客服微信号：rushouyouxuan</h3>
+    <div class="item">
+      <div><img src="./image/tell.png" alt="" class="phon"></div>
+      <a href="tel:4006-906-206" style="font-size:18px;">4006-906-206</a>
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="./common/js/api.js"></script>
+<script type="text/javascript" src="./common/js/config.js"></script>
+<script type="text/javascript" src="./common/js/common.js"></script>
+<script type="text/javascript">
+  if (openapp) {
+    window.apiready = function () {
+      isready()
+    }
+  } else {
+    window.onload = function () {
+      isready()
+    }
+  }
+  var isready = function () {
+    headTitle($api.byId('head'), '官方客服')
+  };
+
+  function chexiao() {
+    api.actionSheet({
+      cancelTitle: '取消',
+      buttons: ['保存图片']
+    }, function (ret, err) {
+      var index = ret.buttonIndex;
+      if (index == 1) {
+        down()
+      }
+    });
+  }
+
+  function down() {
+    api.saveMediaToAlbum({
+      path: 'widget://image/gongzonghao.jpg'
+    }, function (ret, err) {
+      if (ret && ret.status) {
+        alert('保存成功');
+      } else {
+        alert('保存失败');
+      }
+    });
+  }
+</script>
+
+</html>

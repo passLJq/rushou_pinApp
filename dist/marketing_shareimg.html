@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="./common/css/api.css"/>
+      <style>
+          body{
+          background-color: rgba(0,0,0,0.5)
+          }
+          #shareImg_container{position: fixed;top:6%;left: 10%;z-index: 9999}
+          #shareImg_container img{width:90%;}
+          .btn{    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: rgba(255,255,255,1);
+    width: 50%;
+    color: #000
+  }
+  .bthbox{
+    position: fixed;
+    top:90%;
+    width: 100%;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 9999
+  }
+  .hide{display: none}
+  .zhez{position: fixed;z-index: 9999;background-color:rgba(0,0,0,0.5);width: 100%;left: 0;right: 0}
+  .tips {
+    font-size: 14px;
+    color: #fff;
+    margin: 10px auto 0;
+  }
+      </style>
+  </head>
+  <body>
+    <div class="zhez" onclick="closes()"></div>
+    <div id="appbox">
+    <canvas id="main" width="750" height="1334" style="display:none;width:626px; height: 1114px; position:fixed; bottom:-100px; left:50%;transform: translateX(-50%); border:1px solid #797979; border-radius: 10px; background-color: #fff;"></canvas>
+    <!-- 邀请好友签到海报背景 -->
+    <canvas id="baiwan" width="750" height="1334" style="display:none;width:626px; height: 983px; position:fixed; bottom:-100px; left:50%;transform: translateX(-50%); border:1px solid #797979; border-radius: 10px; background-color: #fff;"></canvas>
+    <div id="qrcode" style="display:none;"></div>
+        <!-- <div><img src="./image/xianshi.png" alt="" style="display: none;" id="xianshi"></div> -->
+        <!-- <div><img src="./image/headportrait.png" alt="" style="display: none;" id="headpor"></div> -->
+    <img src="./image/shareimg/pingtuanback.png" id="bgImg_container" style="display: none;"/>
+    <img src="./image/shareimg/pintuan@3x.png" alt="" id="pingtuanjia" style="display: none;"/>
+    <!-- 拼团详情页海报 -->
+    <img src="./image/shareimg/groupbuyBack.png" id="groupbuyBack" style="display: none;"/>
+    <img src="./image/shareimg/groupbuyjia.png" alt="" id="groupbuyjia" style="display: none;"/>
+    <!-- 分享抽奖海报背景 -->
+		<img src="./image/shareimg/duobaoback.jpg" id="lndiana_container" style="display: none;"/>
+    <!-- 分享抽奖 夺宝价 -->
+    <img src="./image/shareimg/duobaojia_icon@3x.png" alt="" id="duobaojia" style="display: none;"/>
+    <!-- <img src="./image/shareimg/hongbaoback.png" id="friend_container" style="display: none;"/> -->
+    <!-- 入手拼的海报 -->
+    <img src="./image/shareimg/pingback.jpg" alt="" id="ping0" style="display: none;"/>
+    <img src="./image/shareimg/pingback1.jpg" alt="" id="ping1" style="display: none;"/>
+    <!-- <img src="https://images.rushouvip.cn/IMG/rsphb3.jpg" alt="" id="ping2" style="display: none;"/> -->
+		<div id="shareImg_container" onclick="closes()"></div>
+    <div class="bthbox hide">
+          <div class="btn" onclick="save()">保存图片到相册</div>
+          <div class="tips" id="tips"></div>
+    </div>
+
+  </div>
+  </body>
+  <script type="text/javascript" src="./common/js/api.js"></script>
+  <!-- <script type="text/javascript" src="./common/js/qrcode.min.js"></script> -->
+  <script type="text/javascript" src="./common/js/config.js"></script>
+  <!-- <script type="text/javascript" src="../../lib/lndiana/jquery-3.2.1.min.js"></script> -->
+  <script type="text/javascript" src="./common/js/common.js"></script>
+  <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+
+  <script type="text/javascript">
+    if (openapp) {
+      window.apiready = function () {
+        isready()
+      }
+    } else {
+      window.onload = function () {
+        isready()
+      }
+    }
+      var isready = function(){
+            // getQrcodes()
+            //压缩商品id
+            if(pageParam('other')){
+              $api.addCls($api.byId('appbox'), 'hide');
+            }
+            var scene=''
+            var fxshopid = getname('SessionShopID');
+            var tips = document.getElementById('tips')
+            //  有cloudid 表示来自分享抽奖
+            if (pageParam('cloudid')) {
+              tips.innerHTML = '分享图片到朋友圈，吸引更多人来和你抽奖哦~'
+              // 表示来自商品详情
+              if(pageParam('detail')) {
+                return getNewPics(pageParam('cloudid'))
+              } else {
+                scene=pageParam('cloudid') + 'A' + getname()
+              }
+            } else if (pageParam('way') == 'friendsharp') {
+              return getNewPics(111)
+            } else if (pageParam('way') == 'tz') {
+              // 入手拼海报直接生成图片即可
+              return pingPic(getname())
+            } else {
+              tips.innerHTML = '分享图片到朋友圈，吸引更多人来和你拼团哦~'
+              if (pageParam('detail')) {
+                // return getNewPics(pageParam('gbid'))
+                scene = getname() + 'A' + pageParam('gbid')
+              } else {
+                scene=pageParam('orderid')+'A'+getname()
+              }
+            }
+      https({
+        url: siteUrl + 'Main/WechatApi/BinaryConversionJson',
+        data: {
+          number: scene,
+          frombase: 11,
+          tobase: 76
+        },
+        successBack: function(ret) {
+          if(ret.Data=='-1'){
+              alert('获取商品id失败');
+              return
+          }
+          console.log(ret.nValue)
+          getNewPics(ret.nValue)
+        }
+      })
+    };
+      function closes(){
+        api.closeFrame();
+
+      }
+      function save(){
+        var src=$api.attr($api.dom('#shareImg_container img'),'src').replace('data:image/png;base64,','')
+        var myDate = new Date()
+        var lae=myDate.getMinutes()+myDate.getSeconds()
+        console.log(lae)
+        var trans = api.require('trans');
+        trans.saveImage({
+            base64Str: src,
+            album:true,
+            imgPath: "fs://image/",
+            imgName:""+lae+"share.png"
+        }, function(ret, err) {
+            if (ret.status) {
+              if(pageParam('other')){
+                var wx = api.require('wx');
+                  wx.shareImage({
+                      apiKey: '',
+                      scene: 'timeline',
+                      thumb: '',
+                      contentUrl: 'fs://image/'+lae+'share.png'
+                  }, function(ret, err) {
+                      if (ret.status) {
+                        alert('分享成功');
+                        closes()
+                      } else {
+                        alert('分享失败');
+                        closes()
+                      }
+                  });
+              }else{
+                alert('保存成功');
+              }
+            } else {
+                alert('保存失败');
+            }
+        });
+      }
+      // window.onload=function(){
+      //   // var url='https://www.baidu.com/'
+      //   //     getQrcode(url)
+      //   //     getNewPic()
+      // }
+      //分享生成图片
+      function getQrcodes(uzpid) {
+        var qrcode = new QRCode('qrcode', {
+            text: 'your content',
+            width: 256,
+            height: 256,
+            colorDark : '#000000',
+            colorLight : '#ffffff',
+            correctLevel : QRCode.CorrectLevel.H
+        });
+            qrcode.makeCode(pageParam('url'));
+      }
+      var username=''
+      var user_photo=''
+      function getNewPics(uzpid){
+        if (window.api) {
+          api.showProgress({
+            text: '正在生成图片...',
+            modal: true
+          });
+        }
+        https({
+          url: siteUrl +'Main/Member/GetMemberJson',
+          method: 'get',
+          data:{
+            uid:getname()
+          },
+          headers:1,
+          successBack: function(ret, err){
+            if (ret) {
+              if(ret.success){
+                if(ret.status==1 && ret.Data!=null){
+                  data =  ret.Data;
+                    if(data.name!=null && data.name!=""){
+                            username=data.name
+                    }
+                    else{username='入手拼'}
+                    if(data.pic!=null && data.pic!=""){
+                      user_photo=data.pic
+                    }
+                    else {user_photo='./img/man.jpg'}
+                    setTimeout(function(){
+                      if (pageParam('cloudid')) {
+                        return lndianaPic(uzpid)
+                      }else if (pageParam('way') == 'friendsharp') {
+                        return drawfriendsharp(uzpid)
+                      } else if (pageParam('detail') == 1) {
+                        return groupbuy('A' + uzpid)
+                      }
+                      // groupbuy('A' + uzpid)
+                      as(uzpid)
+                    },2000)
+
+                  }else{
+                    promptMsg("找不到会员");
+                    }
+                }else{
+                  promptMsg(ret.err);
+                }
+            } else {
+              promptMsg(err.msg);
+            }
+          }
+        })
+
+      }
+    // 百万活动邀请
+    function drawfriendsharp(uzpid) {
+      var mainCtx = getCanvasContext('baiwan');
+      var myCanvas = document.getElementById("baiwan");
+      var saveImg = null;
+      var progress = 0;
+
+      var WIDTH = myCanvas.width
+      var HEIGHT = myCanvas.height
+      console.log(WIDTH+','+HEIGHT)
+      mainCtx.clearRect(0,0,1242,2208);
+      mainCtx.fillStyle="rgba(0,0,0,0)";
+      mainCtx.fillRect(0,0,WIDTH,HEIGHT);
+      var bgImg = document.getElementById("friend_container")
+      mainCtx.drawImage(bgImg, 0, 60, WIDTH, HEIGHT);
+      $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+      // 用户头像
+      var userPic = new Image();
+      userPic.crossOrigin="anonymous"
+      userPic.src = user_photo
+      userPic.onload = function () {
+        circleImg(mainCtx, userPic, 295, 100, 80)
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+        var headpor = document.getElementById("headpor")
+        circleImg(mainCtx, headpor, 295, 100, 80)
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+      }
+      //用户名字
+      mainCtx.font = "normal 900 32px '微软雅黑'";
+      mainCtx.fillStyle = "#5C3730";
+      mainCtx.textAlign = "center"
+      mainCtx.fillText(username, 376, 310)
+
+      var qrcodeImg = new Image();
+      qrcodeImg.crossOrigin="anonymous"
+      // qrcodeImg.src = "https://w.rushouvip.cn/api/Main/WechatApi/GetWxacodeun?scene="+uzpid+"&page=pages/group_detail/group_detail&width=600&devicetype=5";
+      qrcodeImg.src = siteUrl + '/Main/WechatApi/GetWxacodeun?scene=' + getname() + ',qiandao'+'&page=pages/index/index&width=430&is_hyaline=false&devicetype=3'
+      qrcodeImg.onload=function() {
+        // mainCtx.drawImage(qrcodeImg,270,810,200,200);
+        circleImg(mainCtx, qrcodeImg, 280, 870, 100);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+        $api.removeCls($api.dom('.bthbox'), 'hide');
+        document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+        api.hideProgress();
+        //有这个参数代表是分享朋友圈
+        if(pageParam('other')){
+          save()
+        }
+      }
+    }
+      // 入手拼海报
+      function pingPic(uid) {
+        showLoading()
+        var mainCtx = getCanvasContext('main');
+        var myCanvas = document.getElementById("main");
+        var saveImg = null;
+        var progress = 0;
+        var WIDTH = myCanvas.width
+        var HEIGHT = myCanvas.height
+        mainCtx.clearRect(0,0,1000,1000);
+        mainCtx.fillStyle="#fff";
+        mainCtx.fillRect(0,0,WIDTH,HEIGHT);
+        var bgImg = document.getElementById("ping" + pageParam('currentPic'))
+        
+        mainCtx.drawImage(bgImg, 0, 0, WIDTH, HEIGHT);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        var qrcodeImg = new Image();
+        qrcodeImg.crossOrigin="anonymous"
+        if (openapp) {
+          qrcodeImg.src = "https://w.rushouvip.cn/api/Main/WechatApi/GetWxacodeun?scene=" + getname()+"&page=pages/index/index&width=600&devicetype=5"
+        } else {
+          qrcodeImg.src = siteUrl + "Main/WechatApi/GetWxacodeun?scene=" + getname()+"&page=pages/index/index&width=600&devicetype=5"
+        }
+        qrcodeImg.onload=function() {
+          circleImg(mainCtx, qrcodeImg, 276, 1056, 100);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          $api.removeCls($api.dom('.bthbox'), 'hide');
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+          hideLoading()
+          //有这个参数代表是分享朋友圈
+          if(pageParam('other')){
+            save()
+          }
+        }
+      }
+      
+      function groupbuy(uzpid){
+        var mainCtx = getCanvasContext('main');
+        var myCanvas = document.getElementById("main");
+        var saveImg = null;
+        var progress = 0;
+
+        var WIDTH = myCanvas.width
+        var HEIGHT = myCanvas.height
+        mainCtx.clearRect(0,0,1000,1000);
+        mainCtx.fillStyle="#fff";
+        mainCtx.fillRect(0,0,WIDTH,HEIGHT);
+        var bgImg = document.getElementById("groupbuyBack")
+        mainCtx.drawImage(bgImg, 0, 0, WIDTH, HEIGHT);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        // 用户头像
+        var userPic = new Image();
+        userPic.crossOrigin="anonymous"
+        userPic.src = user_photo
+        userPic.onload = function () {
+          circleImg(mainCtx, userPic, 180, 274, 64);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+        }
+        //提示语
+        mainCtx.font = "normal 600 28px '微软雅黑'";
+        mainCtx.fillStyle = "#333";
+        mainCtx.fillText("给你安利一个好东西~", 320, 325)
+        mainCtx.fillText("一起拼团更便宜", 320, 380)
+        //商品图片
+        var Pic = new Image();
+        Pic.crossOrigin="anonymous"
+        Pic.src = pageParam('data').proimage || pageParam('data').pic
+        Pic.onload = function () {
+          mainCtx.drawImage(Pic, 215, 460, 320, 320);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+        }
+        //商品
+        mainCtx.font = "normal 200 30px '微软雅黑'"
+        mainCtx.fillStyle = "#000"
+        var name = pageParam('data').proname || pageParam('data').name
+        canvasTextAutoLine(name,myCanvas, 110, 820, 50,530);
+
+        //价钱
+        mainCtx.font = "normal 700 48px '微软雅黑'";
+        mainCtx.fillStyle = "#FE334B";
+        // console.log(JSON.stringify(pageParam('data')))
+        mainCtx.fillText('¥'+Number(pageParam('data').gbprice).toFixed(2), 230, 920, 130)
+        //拼团价图标
+        var pinggtuan = document.getElementById("groupbuyjia")
+        mainCtx.drawImage(pinggtuan, 378, 883, 116, 36);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        //划线价格
+        var oldPrice = '¥'+Number(pageParam('data').productprice).toFixed(2) + '/日常价'
+        mainCtx.font = "normal 500 28px '微软雅黑'"
+        mainCtx.fillStyle = "rgba(254,51,75,0.4)"
+        mainCtx.fillText(oldPrice, 315, 960, 130);
+        // //划线
+        // mainCtx.strokeStyle="rgb(184,184,184)";
+        // mainCtx.moveTo(290,950);
+        // mainCtx.lineTo(475,950);
+        // mainCtx.stroke()
+        //二维码
+        console.log('scene='+uzpid)
+        var qrcodeImg = new Image();
+        qrcodeImg.crossOrigin="anonymous"
+        qrcodeImg.src = "https://w.rushouvip.cn/api/Main/WechatApi/GetWxacodeun?scene="+uzpid+"&page=pages/groupbuy/groupbuy&width=600&devicetype=5";
+        qrcodeImg.onload=function() {
+          circleImg(mainCtx, qrcodeImg, 283, 1050, 90);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          $api.removeCls($api.dom('.bthbox'), 'hide');
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+          if (window.api) {
+            api.hideProgress();
+          }
+          //有这个参数代表是分享朋友圈
+          if(pageParam('other')){
+            save()
+          }
+        }
+      }
+
+
+      function as(uzpid){
+        var mainCtx = getCanvasContext('main');
+        var myCanvas = document.getElementById("main");
+        var saveImg = null;
+        var progress = 0;
+
+        var WIDTH = myCanvas.width
+        var HEIGHT = myCanvas.height
+        mainCtx.clearRect(0,0,1000,1000);
+        mainCtx.fillStyle="#fff";
+        mainCtx.fillRect(0,0,WIDTH,HEIGHT);
+        var bgImg = document.getElementById("bgImg_container")
+        mainCtx.drawImage(bgImg, 0, 0, WIDTH, HEIGHT);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        //拼团价图标
+        var pinggtuan = document.getElementById("pingtuanjia")
+        mainCtx.drawImage(pinggtuan, 320,690, 116, 36);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        // 用户头像
+        var userPic = new Image();
+        userPic.crossOrigin="anonymous"
+        userPic.src = user_photo
+        userPic.onload = function () {
+          mainCtx.drawImage(userPic,310, 92, 140, 140);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          var headpor = document.getElementById("headpor")
+          mainCtx.drawImage(headpor,310, 92, 140, 140);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+        }
+        //商品图片
+        var Pic = new Image();
+        Pic.crossOrigin="anonymous"
+        Pic.src = pageParam('data').proimage || pageParam('data').pic
+        Pic.onload = function () {
+          mainCtx.drawImage(Pic,280, 460,190, 190);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+        }
+        //用户名字
+        mainCtx.font = "normal 900 28px '微软雅黑'";
+        mainCtx.fillStyle = "#FF5541";
+        mainCtx.fillText("“遇见好物想和你一起分享”", 220, 300);
+        //价钱
+        mainCtx.font = "normal 700 38px '微软雅黑'";
+        mainCtx.fillStyle = "#fb2f3b";
+        console.log(JSON.stringify(pageParam('data')))
+        mainCtx.fillText('¥'+Number(pageParam('data').gbprice).toFixed(2), 230, 780, 130);
+        //原价
+        mainCtx.font = "normal 600 25px '微软雅黑'"
+        mainCtx.fillStyle = "#999999"
+        mainCtx.fillText("长按识别小程序码一起拼团吧", 220, 1050);
+        //划线价格
+        mainCtx.font = "normal 500 30px '微软雅黑'"
+        mainCtx.fillStyle = "rgb(184,184,184)"
+        mainCtx.fillText('¥'+Number(pageParam('data').productprice).toFixed(2), 420, 780, 130);
+        //划线
+        mainCtx.strokeStyle="rgb(184,184,184)";
+        mainCtx.moveTo(420,770);
+        mainCtx.lineTo(420+Number(mainCtx.measureText(Number(pageParam('data').productprice).toFixed(2)).width)+10,770);
+        mainCtx.stroke();
+        //商品
+        mainCtx.font = "normal 200 38px '微软雅黑'"
+        mainCtx.fillStyle = "#000"
+        var name = pageParam('data').proname || pageParam('data').name
+        console.log(12121)
+        console.log(pageParam('data'))
+        canvasTextAutoLine(name,myCanvas, 110, 380, 50,560);
+        //二维码
+        console.log(555)
+        var qrcodeImg = new Image();
+        qrcodeImg.crossOrigin="anonymous"
+        if (pageParam('detail')) {
+          qrcodeImg.src = "https://w.rushouvip.cn/api/Main/WechatApi/GetWxacodeun?scene="+uzpid+"&page=pages/groupbuy/groupbuy&width=600&devicetype=5";
+        } else {
+          qrcodeImg.src = "https://w.rushouvip.cn/api/Main/WechatApi/GetWxacodeun?scene="+uzpid+"&page=pages/group_detail/group_detail&width=600&devicetype=5";
+        }
+        qrcodeImg.onload=function() {
+          mainCtx.drawImage(qrcodeImg,270,810,200,200);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          $api.removeCls($api.dom('.bthbox'), 'hide');
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+          if (window.api) {
+            api.hideProgress();
+          }
+          //有这个参数代表是分享朋友圈
+          if(pageParam('other')){
+            save()
+          }
+        }
+      }
+      function lndianaPic(uzpid) {
+        var mainCtx = getCanvasContext('main');
+        var myCanvas = document.getElementById("main");
+        var saveImg = null;
+        var progress = 0;
+        var WIDTH = myCanvas.width
+        var HEIGHT = myCanvas.height
+        mainCtx.clearRect(0,0,1000,1000);
+        mainCtx.fillStyle="#fff";
+        mainCtx.fillRect(0,0,WIDTH,HEIGHT);
+        var bgImg = document.getElementById("lndiana_container")
+        mainCtx.drawImage(bgImg, 0, 0, WIDTH, HEIGHT);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        //夺宝价图标
+        var duobao = document.getElementById("duobaojia")
+        mainCtx.drawImage(duobao, 320,690, 116, 36);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+        // 用户头像
+        var userPic = new Image();
+        userPic.crossOrigin="anonymous"
+        userPic.src = user_photo
+        userPic.onload = function () {
+          mainCtx.drawImage(userPic,310, 92, 140, 140);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          var headpor = document.getElementById("headpor")
+          mainCtx.drawImage(headpor,310, 92, 140, 140);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'">')
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+        }
+      //商品图片
+      var Pic = new Image();
+      Pic.crossOrigin="anonymous"
+      Pic.src = pageParam('data').proimg
+      Pic.onload = function () {
+        mainCtx.drawImage(Pic,280, 460,190, 190);
+        $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+
+        document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+      }
+      //用户名字
+      mainCtx.font = "normal 900 28px '微软雅黑'";
+      mainCtx.fillStyle = "#FF5541";
+      mainCtx.fillText("“万一就运气爆棚了呢”", 240, 300);
+      //价钱
+      mainCtx.font = "normal 700 38px '微软雅黑'";
+      mainCtx.fillStyle = "#fb2f3b";
+      mainCtx.fillText('¥'+Number(pageParam('data').cloudPrice).toFixed(2), 230, 780, 130);
+      //原价
+      mainCtx.font = "normal 600 25px '微软雅黑'"
+      mainCtx.fillStyle = "#999999"
+      mainCtx.fillText("长按识别小程序码", 275, 1050);
+
+      mainCtx.font = "normal 600 25px '微软雅黑'"
+      mainCtx.fillStyle = "#999999"
+      mainCtx.fillText("一起参加抽奖吧", 285, 1083);
+      //划线价格
+      mainCtx.font = "normal 500 30px '微软雅黑'"
+      mainCtx.fillStyle = "rgb(184,184,184)"
+      mainCtx.fillText('¥'+Number(pageParam('data').proprice).toFixed(2), 420, 780, 130);
+      //划线
+      mainCtx.strokeStyle="rgb(184,184,184)";
+      mainCtx.moveTo(420,770);
+      mainCtx.lineTo(420+Number(mainCtx.measureText(Number(pageParam('data').proprice).toFixed(2)).width)+15,770);
+      mainCtx.stroke();
+      //商品
+      mainCtx.font = "normal 200 38px '微软雅黑'"
+      mainCtx.fillStyle = "#000"
+      canvasTextAutoLine(pageParam('data').proname,myCanvas, 110, 380, 50,560);
+      //二维码
+      var qrcodeImg = new Image();
+      qrcodeImg.crossOrigin="anonymous"
+      if (pageParam('detail')) {
+        qrcodeImg.src = "https://w.rushouvip.cn/api/Main/WechatApi/GetWxacodeun?scene="+".,"+uzpid+"&page=pages/groupbuy/groupbuy&width=600&devicetype=5";
+      } else {
+        qrcodeImg.src = "https://w.rushouvip.cn/api/Main/WechatApi/GetWxacodeun?scene="+uzpid+"&page=pages/lndiresult/lndiresult&width=600&devicetype=5";
+      }
+      qrcodeImg.onload=function() {
+          // mainCtx.drawImage(qrcodeImg,270,810,200,200);
+          circleImg(mainCtx, qrcodeImg, 280, 820, 100);
+          $api.html($api.byId('shareImg_container'), '<img src="'+myCanvas.toDataURL("image/png")+'" id="tupian">')
+          $api.removeCls($api.dom('.bthbox'), 'hide');
+          document.querySelector("#shareImg_container img").addEventListener("load", function () {progress += 1; });
+          api.hideProgress();
+          //有这个参数代表是分享朋友圈
+          if(pageParam('other')){
+            save()
+          }
+        }
+      }
+      function circleImg(ctx, img, x, y, r) {
+        ctx.save();
+        var d =2 * r;
+        var cx = x + r;
+        var cy = y + r;
+        ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+        ctx.clip();
+        ctx.drawImage(img, x, y, d, d);
+        ctx.restore();
+      }
+      //通过id获取canvas对象
+      function getCanvasContext(id){
+        return document.getElementById(id).getContext("2d");
+      }
+      //限制文字宽度
+      function canvasTextAutoLine(str, canvas, initX, initY, lineHeight, maxWidth){
+        var ctx = canvas.getContext("2d")
+        var lineWidth = 0
+        var canvasWidth = canvas.width
+        var lastSubStrIndex = 0
+        var columns = 0
+        for(var i=0; i<str.length; i++){
+          lineWidth += ctx.measureText(str[i]).width;
+          if(lineWidth > maxWidth && columns < 2){//减去initX,防止边界出现的问题
+            columns += 1
+            ctx.fillText(str.substring(lastSubStrIndex, i),initX, initY, maxWidth);
+            initY += lineHeight;
+            lineWidth = 0;
+            lastSubStrIndex = i;
+          } else if ((maxWidth - lineWidth) <= 40 && columns > 0) {
+            ctx.fillText(str.substring(lastSubStrIndex, i) + "...",initX, initY, maxWidth);
+            return
+          } else if ((maxWidth - lineWidth) >= 0 && columns == 1 && i == (str.length - 1)){
+            ctx.fillText(str.substring(lastSubStrIndex, i + 1), initX, initY, maxWidth);
+            return;
+          } else if ((maxWidth - lineWidth) > 0 && columns == 0 && i == (str.length - 1)){
+            ctx.fillText(str.substring(lastSubStrIndex, i + 1), initX, initY, maxWidth);
+            return;
+          }
+        }
+      }
+      //圆形图片
+      // CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+      //     var min_size = Math.min(w, h);
+      //     if (r > min_size / 2) r = min_size / 2;
+      //     // 开始绘制
+      //     this.beginPath();
+      //     this.moveTo(x + r, y);
+      //     this.arcTo(x + w, y, x + w, y + h, r);
+      //     this.arcTo(x + w, y + h, x, y + h, r);
+      //     this.arcTo(x, y + h, x, y, r);
+      //     this.arcTo(x, y, x + w, y, r);
+      //     this.strokeStyle = "#fff"
+      //     this.stroke();
+      //     this.closePath();
+      // return this;
+      // }
+  </script>
+  </html>

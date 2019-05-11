@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>营销分享盒子</title>
+      <link rel="stylesheet" type="text/css" href="./common/css/api.css"/>
+      <style>
+      body{
+          background-color: rgba(0,0,0,0.5)
+      }
+      .box{position: fixed;bottom:0;width: 100%;font-size: 15px;z-index: 9999;background-color: #fff}
+    .item{display: flex;background-color: #fff;}
+    .item-div{width: 20%;text-align: center;}
+    .item-div img{height:45px;width: 45px;display: block;margin:0 auto;padding: 10px 0}
+    .item-div p{padding-bottom: 10px}
+    .zuan{background: #fff;text-align: center;padding: 10px 0}
+    .hide{display: none}
+    .zhezhao{position: fixed;z-index: 999;width: 100%;height: 100%;top:0}
+      </style>
+  </head>
+  <body>
+    <div class="zhezhao" onclick="clos()"></div>
+    <div class="box">
+    <div class="zuan hide">
+      <p>分享好友下单赚<span style="color:#fb2f3b" id="money">6.66</span>元</p>
+    </div>
+    <div class="item">
+      <div class="item-div" id="wxFriends">
+        <img src="./image/share_weixin.png" alt="" onclick="shareText(1)">
+        <p>微信好友</p>
+      </div>
+      <div class="item-div" id="xcx" style="display: none">
+        <img src="./image/xiaochengx.png" alt="" onclick="shareMiniProgram()">
+        <p>小程序</p>
+      </div>
+      <div class="item-div">
+        <img src="./image/share_pengyouquan.png" alt="" onclick="shereimg(1)">
+        <p>朋友圈</p>
+      </div>
+      <div class="item-div">
+        <img src="./image/shengcheng.png" alt="" onclick="shereimg()">
+        <p>生成海报</p>
+      </div>
+    </div>
+    </div>
+  </body>
+  <script type="text/javascript" src="./common/js/api.js"></script>
+  <script type="text/javascript" src="./common/js/config.js"></script>
+  <script type="text/javascript" src="./common/js/common.js"></script>
+  <script type="text/javascript">
+      if (openapp) {
+        window.apiready = function () {
+          isready()
+        }
+      } else {
+        window.onload = function () {
+          isready()
+        }
+      }
+      var isready = function(){
+        console.log(pageParam('data'))
+        var safeBottom = getname('safeAreaBottom') || 0
+        $api.dom('.box').style.paddingBottom= safeBottom +'px'
+        // 来自商品详情 则隐藏微信好友按钮 显示小程序按钮
+        if (pageParam('detail')) {
+          document.getElementById('wxFriends').style.display = 'none'
+          document.getElementById('xcx').style.display = 'block'
+        }
+        if (pageParam('way') == 'friendsharp'){
+          $api.addCls($api.byId('wxFriends'), 'hide');
+        }
+      };
+      function clos(){
+        api.closeFrame();
+      }
+      function shareMiniProgram() {
+        var path = ''
+        if (pageParam('way') == 'lndiana') {
+          path = "/pages/groupbuy/groupbuy?cloudid=" + pageParam('cloudid')
+        } else if (pageParam('way') == 'tz') {
+          path = "/pages/index/index?registerId=" + getname()
+        } else {
+          path = "/pages/groupbuy/groupbuy?gbid=" + pageParam('gbid') + "&pid=" + pageParam('pid')
+        }
+        console.log(path)
+        var wx = api.require("wx")
+        wx.launchMiniProgram({
+            apiKey: '',
+            miniProgramType: 'release',
+            userName: 'gh_5198ad0d774b',
+            path,
+        }, function(ret, err) {
+            if (ret.status) {
+
+            } else {
+              promptMsg('打开小程序失败')
+            }
+        })
+      }
+      function shareText(index){
+        if (!checkLoginStatus()) return hideLoading()
+        // var ae = ''
+        // if (pageParam('way') == 'lndiana') {
+        //   ae =pageParam('data').proimg
+        // } else if (pageParam('way') == 'tz') {
+
+        // } else {
+        //   ae = pageParam('data').proimage
+        // }
+        var now = new Date();
+        var minutes = now.getMinutes();
+        var second = now.getSeconds();
+        var url = ''
+        if (pageParam('way') == 'lndiana') {
+          url = pageParam('data').proimg
+        } else if (pageParam('way') == 'tz') {
+          url = 'https://images.rushouvip.cn/IMG/rspfx.png'
+        } else if (pageParam('way') == 'friendsharp'){
+          url = 'https://images.rushouvip.cn/IMG/chu2.jpg'
+        } else {
+          url = pageParam('data').proimage
+        }
+          switch (index) {
+            case 1:
+            api.download({
+                url: url,
+                savePath: 'fs://test'+minutes+second+'.rar',
+                report: false,
+                cache: false,
+                allowResume: true
+            }, function(ret, err) {
+                if (ret.state == 1) {
+                  var url = ret.savePath;
+                  wxshart(url)
+                } else {
+                  alert('图片下载失败')
+                }
+            });
+              break;
+              case 2:
+            shereimg(1)
+              break;
+              case 3:
+            shereimg()
+              break;
+            default:
+
+          }
+      }
+      function pc(data) {
+        if (openapp) {
+          api.openFrame({
+            name: 'marketing_shareimg',
+            url: './marketing_shareimg.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: data,
+            bounces: false,
+            bgColor: 'rgba(0,0,0,0)'
+          })
+        } else {
+          openWin({
+            name: 'marketing_shareimg',
+            url: './marketing_shareimg.html',
+            pageParam: data,
+          })
+        }
+      }
+      function shereimg(other){
+        if (pageParam('way') == 'lndiana') {
+          pc({
+            data: pageParam('data'),
+            userData: pageParam('userData'),
+            cloudid: pageParam('cloudid'),
+            detail: pageParam('detail'),     // 是否来自详情页分享
+            other: other || ''
+          })
+          // api.openFrame({
+          //   name: 'marketing_shareimg',
+          //   url: './marketing_shareimg.html',
+          //   rect: {
+          //       x: 0,
+          //       y: 0,
+          //       w: 'auto',
+          //       h: 'auto'
+          //   },
+          //   pageParam: {
+          //       data: pageParam('data'),
+          //       userData: pageParam('userData'),
+          //       cloudid: pageParam('cloudid'),
+          //       detail: pageParam('detail'),     // 是否来自详情页分享
+          //       other: other || ''
+          //   },
+          //   bounces: false,
+          //   bgColor: 'rgba(0,0,0,0)'
+          // });
+        } else if (pageParam('way') == 'friendsharp') {
+          pc({
+            way: 'friendsharp',
+            other: other || ''
+          })
+          // api.openFrame({
+          //   name: 'marketing_shareimg',
+          //   url: './marketing_shareimg.html',
+          //   rect: {
+          //       x: 0,
+          //       y: 0,
+          //       w: 'auto',
+          //       h: 'auto'
+          //   },
+          //   pageParam: {
+          //     way: 'friendsharp',
+          //     other: other || ''
+          //   },
+          //   bounces: false,
+          //   bgColor: 'rgba(0,0,0,0)'
+          // })
+        } else if (pageParam('way') == 'tz') {
+          pc ({
+            way: 'tz',
+            currentPic: pageParam('currentPic'),
+            other:other||''
+          })
+          // api.openFrame({
+          //     name: 'marketing_shareimg',
+          //     url: './marketing_shareimg.html',
+          //     rect: {
+          //         x: 0,
+          //         y: 0,
+          //         w: 'auto',
+          //         h: 'auto'
+          //     },
+          //     pageParam: {
+          //         way: 'tz',
+          //         currentPic: pageParam('currentPic'),
+          //         other:other||''
+          //     },
+          //     bounces: false,
+          //     bgColor: 'rgba(0,0,0,0)'
+          // });
+        } else {
+          pc({
+            data: pageParam('data'),
+            orderid:pageParam('orderid'),
+            detail: pageParam('detail'),     // 是否来自详情页
+            gbid: pageParam('gbid'),
+            pid: pageParam('pid'),
+            other:other||''
+          })
+          // api.openFrame({
+          //     name: 'marketing_shareimg',
+          //     url: './marketing_shareimg.html',
+          //     rect: {
+          //         x: 0,
+          //         y: 0,
+          //         w: 'auto',
+          //         h: 'auto'
+          //     },
+          //     pageParam: {
+          //         data: pageParam('data'),
+          //         orderid:pageParam('orderid'),
+          //         detail: pageParam('detail'),     // 是否来自详情页
+          //         gbid: pageParam('gbid'),
+          //         pid: pageParam('pid'),
+          //         other:other||''
+          //     },
+          //     bounces: false,
+          //     bgColor: 'rgba(0,0,0,0)'
+          // });
+        }
+        setTimeout(function(){
+           clos()
+        },500)
+      }
+      function wxshart(url){
+        console.log($api.jsonToStr(pageParam('data')))
+        var wx = api.require('wx');
+        var title = ''
+        var path = ''
+        if (pageParam('way') == 'lndiana') {
+          title = pageParam('userData').username + '@您，' + '邀您一起来抽奖'
+          path = '/pages/lndiresult/lndiresult?cloudid=' + pageParam('data').cloudid + '&ruid=' + api.getPrefs({sync: true,key: 'SessionUserID'})
+        } else if (pageParam('way') == 'tz') {
+          title = '邀您一起入手拼'
+          path = '/pages/index/index?registerId='+api.getPrefs({sync: true,key: 'SessionUserID'})
+        } else {
+          title = pageParam('data').proname
+          path = '/pages/group_detail/group_detail?orderid='+pageParam('orderid')+'&ruid='+api.getPrefs({sync: true,key: 'SessionUserID'})
+        }
+        wx.shareProgram({
+          apiKey: '',
+          scene: 'session',
+          title: title,
+          description: '分享内容的描述',
+          thumb: url,
+          webpageUrl: 'http://apicloud.com',
+          userName: 'gh_5198ad0d774b',
+          path: path,
+        }, function(ret, err) {
+          if (ret.status) {
+              alert('分享成功');
+          } else {
+            if(err.code==3){
+              promptMsg('分享图片太大')
+            }else{
+              alert(err.code);
+            }
+          }
+        });
+      }
+  </script>
+  </html>

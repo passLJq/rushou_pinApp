@@ -1,0 +1,206 @@
+
+
+/* 遮罩 */
+// .mark {
+//   width: 100%;
+//   height: 100%;
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   background-color: rgba(51, 51, 51, .7);
+//   z-index: 999;
+// }
+/* 优惠券 */
+.couponn {
+  width: 100%;
+  height: rem(411);
+  position: fixed;
+  left: 0;
+  background-color: #fff;
+  z-index: 100199999;
+  border-radius: rem(8) rem(8) 0 0;
+  bottom: 0;
+}
+.main {
+  width: 100%;
+  height: rem(363);
+  overflow-y: scroll;
+  padding-bottom: rem(15);
+}
+.main::-webkit-scrollbar {
+  display:none
+}
+.couponn > .titlel {
+  width: 100%;
+  height: rem(48);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 rem(13);
+}
+.couponn > .titlel .t {
+  font-size: rem(14);
+  font-weight: 600;
+  color:#333;
+}
+.couponn > .titlel .guanbi {
+  // width: rems(80);
+  font-size: rem(11);
+  color: #000;
+  img {
+    width: rems(34);
+    height: rems(34);
+    margin: 0 auto;
+  }
+}
+.line {
+  width: 93.6%;
+  height: rem(1);
+  background-color: #f6f6fa;
+  margin: 0 auto;
+}
+/* 可领优惠券 */
+.couponn .canget {
+  width: 100%;
+  padding: 0 rem(10);
+}
+.couponn .canget .cangetHead {
+  padding: rem(10) rem(16);
+  font-size: rem(12);
+  color: #333;
+}
+.couponn .canget .cangetHead span {
+  font-size: rem(12);
+  color: #999;
+  margin-left: rem(11);
+}
+.couponn .item {
+  width: 100%;
+  min-height: rem(80);
+  background-color: #fff;
+  box-shadow: 0 rem(1) rem(10) 0 rgba(216,216,216,1);
+  border-radius: rem(8);
+  overflow: hidden;
+  display: flex;
+  position: relative;
+  line-height: rems(30);
+}
+.couponn .item .closePass {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: rem(10);
+  color: #d8d8d8;
+  padding: rem(1) rem(7);
+  background-color: rgba(66,113,97,.6);
+  border-radius: 0 rem(8) 0 rem(4);
+}
+.couponn .item + .item {
+  margin-top: rem(10);
+}
+.couponn .item .left {
+  width: 28%;
+  // height: 100%;
+  background: linear-gradient(270deg,rgba(255,76,95,1) 0%,rgba(255,112,87,1) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+.couponn .item .left .price {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: rems(15);
+}
+.couponn .item .left .price span{
+  font-size: rem(14);
+  font-weight: 600;
+}
+.couponn .item .left .price span:nth-child(2){
+  font-size: rem(24);
+}
+.couponn .item .left > span{
+  // margin-top: rem(7);
+  font-size: rem(12);
+}
+
+.couponn .item .right {
+  width: 72%;
+  height: 100%;
+  padding: 0 rem(10);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.couponn .item .right .cexplain {
+  height: 100%;
+  padding-left: 0;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.couponn .item .right .cexplain .titlel {
+  margin-top: rem(8);
+  // text-align: left;
+  display: flex;
+  justify-content: flex-start;
+}
+.couponn .item .right .cexplain .titlel span {
+  font-size: rem(12);
+  font-weight: 600;
+  color: #333;
+}
+.couponn .item .right .cexplain .titlel .tt {
+  font-size: rem(10);
+  color: #FC7A60;
+  padding: rem(1) rem(7);
+  background-color: #FEE3DD;
+  margin-right: rem(10);
+  border-radius: rem(8);
+}
+.couponn .item .right .cexplain .content {
+  font-size: rem(12);
+  color: #333;
+  margin-top: rem(11);
+}
+.couponn .item .right .cexplain .date {
+  font-size: rems(20);
+  color: #999;
+  margin-top: rem(5);
+}
+.couponn .item .right .btn {
+  min-width: rem(70);
+  color: #fff;
+  font-size: rem(10);
+  padding: rem(2) rem(10);
+  border-radius: rem(8);
+  text-align: center;
+  background: rgba(255,76,95,1);
+}
+.couponn .item .right .btn.b {
+  background-color: #d8d8d8;
+}
+
+/* 没有数据时 */
+.couponn .nodataa {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: rem(30);
+}
+.couponn .nodataa img {
+  width: rems(210);
+  height: rems(210);
+  margin-top: rem(10);
+}
+.couponn .nodataa span {
+  font-size: rem(12);
+  color: #999;
+}
+.couponn .nodataa > .p {
+  font-size: rem(14);
+  color: #333;
+  margin: rem(11.5) 0 rem(5);
+}
